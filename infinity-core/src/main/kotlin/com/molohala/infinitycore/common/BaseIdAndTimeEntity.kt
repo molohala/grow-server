@@ -5,11 +5,11 @@ import java.time.LocalDateTime
 
 @MappedSuperclass
 abstract class BaseIdAndTimeEntity(
-    id: Long?,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(
+        name = "id",
+        nullable = false,
+        updatable = false
+    ) val id: Long?,
     createdAt: LocalDateTime?
 ) : BaseTimeEntity(createdAt) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    val id: Long? = id
 }

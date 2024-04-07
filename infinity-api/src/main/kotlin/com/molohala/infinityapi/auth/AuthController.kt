@@ -1,5 +1,6 @@
 package com.molohala.infinityapi.auth
 
+import com.molohala.infinityapi.response.ResponseData
 import com.molohala.infinitycore.auth.application.dto.req.ReissueTokenReq
 import com.molohala.infinitycore.auth.application.service.AuthService
 import com.molohala.infinitycore.auth.application.dto.res.ReissueTokenRes
@@ -18,12 +19,10 @@ class AuthController(
     @PostMapping("/sign-in")
     suspend fun signIn(
         @RequestParam("code") @Valid code: String
-    ) = authService.signIn(code)
+    ) = ResponseData.ok("로그인 성공",authService.signIn(code))
 
     @PostMapping("/reissue")
     fun reissue(
         @RequestBody @Valid reissueTokenReq: ReissueTokenReq
-    ): ReissueTokenRes {
-        return authService.reissue(reissueTokenReq)
-    }
+    ) = ResponseData.ok("토큰 재발급 성공",authService.reissue(reissueTokenReq))
 }
