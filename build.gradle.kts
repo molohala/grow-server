@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.jpa") version "1.9.20"
+    kotlin("kapt") version "1.9.21"
 }
 
 java {
@@ -43,11 +44,10 @@ allprojects{
     tasks.withType<Test> {
         useJUnitPlatform()
     }
-
-
 }
 
 subprojects {
+    apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.jetbrains.kotlin.jvm")

@@ -5,7 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
-@Entity(name = "tble_social_account")
+@Entity(name = "tbl_social_account")
 class SocialAccount(
     @Id
     @Column(nullable = false, updatable = false)
