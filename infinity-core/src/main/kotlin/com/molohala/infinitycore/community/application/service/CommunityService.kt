@@ -4,6 +4,7 @@ import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.req.CommunityModifyReq
 import com.molohala.infinitycore.community.application.dto.req.CommunitySaveReq
 import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
+import com.molohala.infinitycore.community.domain.consts.CommunityState
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.exception.CommunityNotFoundException
 import com.molohala.infinitycore.community.repository.CommunityJpaRepository
@@ -28,6 +29,7 @@ class CommunityService(
         communityJpaRepository.save(
             Community(
                 communitySaveReq.content,
+                CommunityState.ACTIVE,
                 memberSessionHolder.current().id!!
             )
         )
@@ -57,6 +59,6 @@ class CommunityService(
         if(curMember.id != community.id){
             throw AccessDeniedException()
         }
-        communityJpaRepository.delete(community)
+
     }
 }
