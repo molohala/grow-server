@@ -24,7 +24,7 @@ jobs:
 
       - name: make application.yml
         run: |
-          cd ./src/main/resources
+          cd ./infinity-api/src/main/resources/application.yml
           touch ./application.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
 
