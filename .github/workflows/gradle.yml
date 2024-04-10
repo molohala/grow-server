@@ -32,7 +32,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew :infinity-api:build -x test --parallel
+        run: ./gradlew :infinity-api:build -t grow:latest -x test --parallel
 
       - name: Docker build
         run: |
