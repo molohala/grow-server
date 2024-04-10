@@ -1,6 +1,6 @@
 FROM openjdk:17
 
-ARG JAR_FILE=infinity-api/build/libs/infinity-server-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=infinity-api/build/libs/infinity-api-0.0.1-SNAPSHOT-plain.jar
 
 COPY ${JAR_FILE} /app.jar
 

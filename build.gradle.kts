@@ -60,5 +60,5 @@ tasks.bootJar {
 }
 
 tasks.jar {
-    enabled = true
+    enabled = false
 }
