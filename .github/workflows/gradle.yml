@@ -37,9 +37,8 @@ jobs:
       - name: Docker build
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t grow .
-          docker tag grow ${{ secrets.DOCKER_USERNAME }}/grow:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/grow:latest
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/grow:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/grow:latest
 
       - name: Deploy with SSH
         if: github.ref == 'refs/heads/main'
