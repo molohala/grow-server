@@ -24,8 +24,8 @@ jobs:
 
       - name: make application.yml
         run: |
-          mkdir -p ./infinity-api/src/main/resources/application.yml
-          touch ./application.yml
+          mkdir -p ./infinity-api/src/main/resources
+          touch ./infinity-api/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
 
       - name: Grant execute permission for gradlew
