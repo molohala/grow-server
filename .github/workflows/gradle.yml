@@ -1,17 +1,16 @@
-name: Java CI with Gradle
+name: CD
 
 on:
   push:
-    branches: "main"
-  pull_request: 
-    branches: "main"
- 
-permissions: 
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,40 +21,36 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: make application.yml
+      - name: Set yml file
         run: |
           mkdir -p ./infinity-api/src/main/resources/application.yml
           touch ./application.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
- 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew :infinity-api:build -x test --parallel
 
-      - name: Docker build
+      - name: Build Docker Image For Spring
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t grow . # Dockerfile 경로 수정
-          docker tag grow ${{ secrets.DOCKER_USERNAME }}/grow:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/grow:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/grow:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/grow:latest
 
-      - name: Deploy with SSH
-        if: github.ref == 'refs/heads/main'
-        uses: appleboy/ssh-action@master
-
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: EC2 Docker Run
+        uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
+          host: ${{ secrets.HOST }}
           username: ubuntu
-          key: ${{ secrets.PRIVATE_KEY }} # pem 키
-          # 도커 작업
+          password: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.LINUX_SSH_PORT }}
           script: |
-            sudo docker stop $(docker ps -a -q)
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
-            sudo docker image prune -a -f
-            
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/grow:latest
-                        
-            sudo docker run -d --name grow_app --log-driver=syslog -p 80:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/grow:latest
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker stop grow
+            docker rm grow
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/grow:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/grow:latest
+            docker run -d -p 80:8080 --name grow ${{ secrets.DOCKER_USERNAME }}/grow:latest
