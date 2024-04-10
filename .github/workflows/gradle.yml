@@ -37,7 +37,7 @@ jobs:
       - name: Docker build
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t grow . # Dockerfile 경로 수정
+          docker build -t grow .
           docker tag grow ${{ secrets.DOCKER_USERNAME }}/grow:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/grow:latest
 
