@@ -11,9 +11,5 @@ dependencies {
 }
 
 tasks.bootJar {
-    enabled = false
-}
-
-tasks.jar {
-    enabled = false
+    enabled = true
 }
