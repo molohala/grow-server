@@ -6,5 +6,6 @@ data class CommunityListRes(
     val communityId: Long,
     val content: String,
     val createdAt: LocalDateTime,
+    val like: Long,
     val writer: String
 )

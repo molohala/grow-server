@@ -35,9 +35,9 @@ class CommunityService(
         )
     }
 
-    fun getList(page: PageRequest) =
-        queryCommunityRepository.findWithPagination(page)
-
+    fun getList(page: PageRequest): MutableList<CommunityListRes> {
+        return queryCommunityRepository.findWithPagination(page)
+    }
     fun getById(id: Long) = queryCommunityRepository.findById(id)
 
     @Transactional(rollbackFor = [Exception::class])
