@@ -14,8 +14,8 @@ data class ErrorResponseEntity(
                 .body(
                     ErrorResponseEntity(
                         status = e.getHttpStatus().value(),
-                        code = e.getExceptionName()!!,
-                        message = e.getMessage()!!
+                        code = e.getExceptionName(),
+                        message = e.getMessage()
                     )
                 )
         }

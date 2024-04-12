@@ -19,7 +19,7 @@ class AuthController(
     @PostMapping("/sign-in")
     suspend fun signIn(
         @RequestParam("code") @Valid code: String
-    ) = ResponseData.ok("로그인 성공",authService.signIn(code))
+    ) = ResponseData.ok("로그인 성공", authService.signIn(code))
 
     @PostMapping("/reissue")
     fun reissue(

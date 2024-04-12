@@ -35,7 +35,7 @@ class CommunityService(
         )
     }
 
-    fun getList(page: PageRequest): MutableList<CommunityListRes> {
+    fun getList(page: PageRequest): List<CommunityListRes> {
         return queryCommunityRepository.findWithPagination(page)
     }
     fun getById(id: Long) = queryCommunityRepository.findById(id)

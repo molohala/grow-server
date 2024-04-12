@@ -18,7 +18,7 @@ class QueryDslCommunityRepository(
     val query: JPAQuery<Community> = queryFactory.select(community)
         .from(community)
 
-    override fun findWithPagination(pageRequest: PageRequest): MutableList<CommunityListRes> {
+    override fun findWithPagination(pageRequest: PageRequest): List<CommunityListRes> {
         return queryFactory
             .select(communityRes())
             .from(community)
