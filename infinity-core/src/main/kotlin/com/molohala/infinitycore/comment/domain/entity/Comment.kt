@@ -9,7 +9,8 @@ import jakarta.persistence.Entity
 class Comment(
     content: String,
     commentState: CommentState,
-    memberId: Long
+    memberId: Long,
+    communityId: Long
 ): BaseIdAndTimeEntity(null, null) {
     @Column(nullable = false)
     var content = content
@@ -22,4 +23,16 @@ class Comment(
     @Column(nullable = false)
     var memberId = memberId
         private set
+
+    @Column(nullable = false)
+    var communityId = communityId
+        private set
+
+    fun delete(){
+        commentState = CommentState.DELETED
+    }
+
+    fun modify(content: String){
+        this.content = content
+    }
 }

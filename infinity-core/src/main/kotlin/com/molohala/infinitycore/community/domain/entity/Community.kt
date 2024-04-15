@@ -24,11 +24,11 @@ class Community(
     var memberId = memberId
         private set
 
-    fun modify(content: String){
-        this.content=content
-    }
-
     fun delete(){
         this.state=CommunityState.DELETED
+    }
+
+    fun modify(content: String){
+        this.content=content
     }
 }

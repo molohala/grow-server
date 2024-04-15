@@ -76,6 +76,6 @@ class CommunityService(
         if(curMember.id != community.id){
             throw AccessDeniedException()
         }
-
+        community.delete()
     }
 }
