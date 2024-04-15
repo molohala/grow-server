@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 class QueryDslCommentRepository(
     private val queryFactory: JPAQueryFactory
 ): QueryCommentRepository {
-    override fun findByNotificationId(communityId: Long): List<CommentRes>? {
+    override fun findByCommunityId(communityId: Long): List<CommentRes>? {
         return queryFactory.select(commentProjection())
             .from(comment)
             .where(comment.communityId.eq(communityId))
