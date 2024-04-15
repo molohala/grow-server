@@ -4,7 +4,6 @@ import com.molohala.infinitycommon.exception.ErrorResponseEntity
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
 import com.molohala.infinitycommon.exception.custom.CustomException
 import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
@@ -33,7 +32,7 @@ class CustomExceptionHandler {
             .body(
                 ErrorResponseEntity(
                 status = e.statusCode.value(),
-                code = GlobalExceptionCode.PARAMETER_NOT_VALID.name,
+                code = GlobalExceptionCode.INVALID_PARAMETER.name,
                 message = message.substring(0, message.length - 2)
             )
             )

@@ -1,12 +1,13 @@
 package com.molohala.infinityinfra.token
 
 
+import com.molohala.infinitycommon.exception.GlobalExceptionCode
+import com.molohala.infinitycommon.exception.custom.CustomException
 import com.molohala.infinitycommon.exception.custom.InternalServerException
 import com.molohala.infinitycore.member.application.service.MemberService
 import com.molohala.infinitycore.member.domain.entity.Member
 import com.molohala.infinityinfra.security.MemberDetails
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.*
 import jakarta.servlet.http.HttpServletRequest
 import org.apache.logging.log4j.util.Strings
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -36,6 +37,12 @@ class TokenExtractor(
                 .setSigningKey(jwtProperties.secret)
                 .build()
                 .parseClaimsJws(token).body
+        } catch (e: ExpiredJwtException) {
+            throw CustomException(GlobalExceptionCode.TOKEN_EXPIRED)
+        } catch (e: MalformedJwtException) {
+            throw CustomException(GlobalExceptionCode.INVALID_TOKEN)
+        } catch (e: UnsupportedJwtException) {
+            throw CustomException(GlobalExceptionCode.INVALID_TOKEN)
         } catch (e: Exception) {
             throw InternalServerException()
         }

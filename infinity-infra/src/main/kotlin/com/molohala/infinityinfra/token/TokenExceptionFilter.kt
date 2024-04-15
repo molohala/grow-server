@@ -1,6 +1,7 @@
 package com.molohala.infinityinfra.token
 
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
+import com.molohala.infinitycommon.exception.custom.CustomException
 import com.molohala.infinityinfra.security.ErrorResponseSender
 import com.molohala.infinityinfra.webclient.exception.WebClientException
 import jakarta.servlet.FilterChain
@@ -15,6 +16,8 @@ class TokenExceptionFilter(private val errorResponseSender: ErrorResponseSender)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         try {
             filterChain.doFilter(request, response)
+        } catch (e: CustomException) {
+          errorResponseSender.send(response, e.exceptionCode)
         } catch (e: WebClientException) {
             errorResponseSender.send(response, e.exceptionCode)
         } catch (e: Exception) {
