@@ -50,9 +50,9 @@ class CommunityService(
         }.toList()
     }
 
-    fun getById(id: Long) {
+    fun getById(id: Long): CommunityListRes? {
         val likeCnt: Long = queryLikeRepository.getCntByCommunityId(id)
-        queryCommunityRepository.findById(id, likeCnt)
+        return queryCommunityRepository.findById(id, likeCnt)
     }
 
     @Transactional(rollbackFor = [Exception::class])
