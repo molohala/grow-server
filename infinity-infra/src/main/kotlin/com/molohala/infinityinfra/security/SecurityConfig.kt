@@ -1,6 +1,8 @@
 package com.molohala.infinityinfra.security
 
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
+import com.molohala.infinityinfra.token.TokenExceptionFilter
+import com.molohala.infinityinfra.token.TokenFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -16,7 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val errorResponseSender: ErrorResponseSender
+    private val errorResponseSender: ErrorResponseSender,
+    private val tokenFilter: TokenFilter,
+    private val tokenExceptionFilter: TokenExceptionFilter
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain =
@@ -24,11 +29,13 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .cors {  }
             .csrf { it.disable() }
+            .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(tokenExceptionFilter, TokenFilter::class.java)
             .authorizeHttpRequests { authorize ->
                 authorize
-//                    .requestMatchers("")
-//                    .permitAll()
-                    .anyRequest().permitAll()
+                    .requestMatchers("auth/**")
+                    .permitAll()
+                    .anyRequest().authenticated()
             }
             .exceptionHandling {
                 it.accessDeniedHandler { _, response, _ ->
