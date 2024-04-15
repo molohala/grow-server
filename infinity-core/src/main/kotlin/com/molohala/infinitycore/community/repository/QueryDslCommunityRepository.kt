@@ -4,12 +4,15 @@ import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.entity.QCommunity.community
+import com.molohala.infinitycore.like.domain.entity.QLike.like
 import com.molohala.infinitycore.member.domain.entity.QMember.member
 import com.querydsl.core.types.ConstructorExpression
 import com.querydsl.core.types.Projections
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class QueryDslCommunityRepository(
@@ -20,33 +23,33 @@ class QueryDslCommunityRepository(
 
     override fun findWithPagination(pageRequest: PageRequest): List<CommunityListRes> {
         return queryFactory
-            .select(communityRes())
+            .select(
+                communityProjection(0)
+            )
             .from(community)
-            .innerJoin(member)
-            .on(community.memberId.eq(member.id))
+            .innerJoin(member).on(community.memberId.eq(member.id))
             .offset((pageRequest.page - 1) * pageRequest.size)
             .limit(pageRequest.size)
             .fetch()
     }
 
-    override fun findById(id: Long): CommunityListRes? {
+    override fun findById(id: Long, likeCnt:Long): CommunityListRes? {
         return queryFactory
-            .select(communityRes())
+            .select(communityProjection(likeCnt))
             .from(community)
-            .innerJoin(member)
-            .on(community.memberId.eq(member.id))
+            .innerJoin(member).on(community.memberId.eq(member.id))
+            .where(community.id.eq(id))
             .fetchFirst()
     }
 
-    fun communityRes(): ConstructorExpression<CommunityListRes> {
+    private fun communityProjection(likeCount: Long): ConstructorExpression<CommunityListRes> {
         return Projections.constructor(
             CommunityListRes::class.java,
             community.id,
             community.content,
             community.createdAt,
+            Expressions.constant(likeCount), // 집계 함수로 얻은 좋아요 개수를 상수 표현식으로 추가
             member.name
         )
     }
 }
-
-//    private ConstructorExpression<StoryQueryByMemberResponse> q

@@ -5,5 +5,5 @@ import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
 
 interface QueryCommunityRepository {
     fun findWithPagination(pageRequest: PageRequest):List<CommunityListRes>
-    fun findById(id: Long): CommunityListRes?
+    fun findById(id: Long, likeCnt:Long): CommunityListRes?
 }
