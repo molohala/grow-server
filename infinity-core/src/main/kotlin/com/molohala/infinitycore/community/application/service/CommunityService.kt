@@ -9,6 +9,7 @@ import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.exception.CommunityNotFoundException
 import com.molohala.infinitycore.community.repository.CommunityJpaRepository
 import com.molohala.infinitycore.community.repository.QueryCommunityRepository
+import com.molohala.infinitycore.like.repository.QueryLikeRepository
 import com.molohala.infinitycore.member.application.MemberSessionHolder
 import com.molohala.infinitycore.member.domain.exception.AccessDeniedException
 import com.molohala.infinitycore.member.repository.MemberJpaRepository
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 class CommunityService(
     private val communityJpaRepository: CommunityJpaRepository,
     private val queryCommunityRepository: QueryCommunityRepository,
+    private val queryLikeRepository: QueryLikeRepository,
     private val memberSessionHolder: MemberSessionHolder
 ) {
 
@@ -37,9 +39,21 @@ class CommunityService(
 
     fun getList(page: PageRequest): List<CommunityListRes> {
         return queryCommunityRepository.findWithPagination(page)
+            .stream().map {
+            community-> CommunityListRes(
+                community.communityId,
+                community.content,
+                community.createdAt,
+                queryLikeRepository.getCntByCommunityId(community.communityId),
+                community.writer
+            )
+        }.toList()
     }
 
-    fun getById(id: Long) = queryCommunityRepository.findById(id)
+    fun getById(id: Long) {
+        val likeCnt: Long = queryLikeRepository.getCntByCommunityId(id)
+        queryCommunityRepository.findById(id, likeCnt)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun modify(communityModifyReq: CommunityModifyReq) {
