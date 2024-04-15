@@ -1,5 +1,6 @@
 package com.molohala.infinityinfra.token
 
+import com.molohala.infinitycommon.exception.custom.CustomException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -19,7 +20,7 @@ class TokenFilter(
         private const val TOKEN_TYPE = "Bearer"
     }
 
-    @Throws(ServletException::class, IOException::class)
+    @Throws(ServletException::class, IOException::class, CustomException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
