@@ -41,15 +41,16 @@ class CommunityService(
     fun getList(page: PageRequest): List<CommunityListRes> {
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
         return queryCommunityRepository.findWithPagination(page)
-            .stream().map {
-            community-> CommunityListRes(
-                community.communityId,
-                community.content,
-                community.createdAt,
-                queryLikeRepository.getCntByCommunityId(community.communityId),
-                community.writer
-            )
-        }.toList()
+            .map {
+                CommunityListRes(
+                    it.communityId,
+                    it.content,
+                    it.createdAt,
+                    queryLikeRepository.getCntByCommunityId(it.communityId),
+                    it.writerName,
+                    it.writerId
+                )
+            }
     }
 
     fun getById(id: Long): CommunityListRes? {

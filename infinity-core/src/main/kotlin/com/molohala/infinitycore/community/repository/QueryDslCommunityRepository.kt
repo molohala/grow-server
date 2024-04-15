@@ -4,7 +4,6 @@ import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.entity.QCommunity.community
-import com.molohala.infinitycore.like.domain.entity.QLike.like
 import com.molohala.infinitycore.member.domain.entity.QMember.member
 import com.querydsl.core.types.ConstructorExpression
 import com.querydsl.core.types.Projections
@@ -12,7 +11,6 @@ import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 @Repository
 class QueryDslCommunityRepository(
@@ -49,7 +47,8 @@ class QueryDslCommunityRepository(
             community.content,
             community.createdAt,
             Expressions.constant(likeCount), // 집계 함수로 얻은 좋아요 개수를 상수 표현식으로 추가
-            member.name
+            member.name,
+            member.id
         )
     }
 }

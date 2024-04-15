@@ -8,5 +8,6 @@ data class CommunityListRes @QueryProjection constructor(
     val content: String,
     val createdAt: LocalDateTime,
     val like: Long,
-    val writer: String
+    val writerName: String,
+    val writerId: Long
 )
