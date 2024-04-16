@@ -1,7 +1,7 @@
 package com.molohala.infinitycore.community.repository
 
 import com.molohala.infinitycore.common.PageRequest
-import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
+import com.molohala.infinitycore.community.application.dto.res.CommunityRes
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.entity.QCommunity.community
 import com.molohala.infinitycore.member.domain.entity.QMember.member
@@ -19,10 +19,10 @@ class QueryDslCommunityRepository(
     val query: JPAQuery<Community> = queryFactory.select(community)
         .from(community)
 
-    override fun findWithPagination(pageRequest: PageRequest): List<CommunityListRes> {
+    override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
         return queryFactory
             .select(
-                communityProjection(0)
+                communityProjection(0, false)
             )
             .from(community)
             .innerJoin(member).on(community.memberId.eq(member.id))
@@ -31,22 +31,23 @@ class QueryDslCommunityRepository(
             .fetch()
     }
 
-    override fun findById(id: Long, likeCnt:Long): CommunityListRes? {
+    override fun findById(id: Long, likeCnt:Long, isLike:Boolean): CommunityRes? {
         return queryFactory
-            .select(communityProjection(likeCnt))
+            .select(communityProjection(likeCnt, isLike))
             .from(community)
             .innerJoin(member).on(community.memberId.eq(member.id))
             .where(community.id.eq(id))
             .fetchFirst()
     }
 
-    private fun communityProjection(likeCount: Long): ConstructorExpression<CommunityListRes> {
+    private fun communityProjection(likeCount: Long, isLike: Boolean): ConstructorExpression<CommunityRes> {
         return Projections.constructor(
-            CommunityListRes::class.java,
+            CommunityRes::class.java,
             community.id,
             community.content,
             community.createdAt,
-            Expressions.constant(likeCount), // 집계 함수로 얻은 좋아요 개수를 상수 표현식으로 추가
+            Expressions.constant(likeCount),
+            Expressions.constant(isLike),
             member.name,
             member.id
         )

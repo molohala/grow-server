@@ -5,6 +5,7 @@ import com.molohala.infinityapi.response.ResponseData
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.req.CommunityModifyReq
 import com.molohala.infinitycore.community.application.dto.req.CommunitySaveReq
+import com.molohala.infinitycore.community.application.dto.res.CommunityRes
 import com.molohala.infinitycore.community.application.service.CommunityService
 import org.springframework.web.bind.annotation.*
 
@@ -18,7 +19,7 @@ class CommunityController(
         @RequestBody communitySaveReq: CommunitySaveReq
     ): Response {
         communityService.save(communitySaveReq)
-        return Response.ok("커뮤니티 생성 성공")
+        return Response.created("커뮤니티 생성 성공")
     }
 
     @GetMapping
@@ -29,7 +30,9 @@ class CommunityController(
     @GetMapping("/{id}")
     fun getById(
         @PathVariable("id") id: Long
-    ) = ResponseData.ok("커뮤니티 조회 성공", communityService.getById(id))
+    ): ResponseData<CommunityRes?> {
+        return ResponseData.ok("커뮤니티 조회 성공", communityService.getById(id))
+    }
 
     @PatchMapping
     fun modify(
