@@ -15,4 +15,8 @@ class InfoController(
     @GetMapping("/github")
     fun githubInfo(@RequestParam("name") name: String)
         = ResponseData.ok("깃허브 프로필 조회 완료", infoService.getGithubInfo(name))
+
+    @GetMapping("/solvedac")
+    fun solvedAcInfo(@RequestParam("name") name: String)
+            = ResponseData.ok("솔브드 프로필 조회 완료", infoService.getSolvedAcInfo(name))
 }
