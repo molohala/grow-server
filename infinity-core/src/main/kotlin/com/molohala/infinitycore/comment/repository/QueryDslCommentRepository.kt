@@ -16,6 +16,7 @@ class QueryDslCommentRepository(
         return queryFactory.select(commentProjection())
             .from(comment)
             .where(comment.communityId.eq(communityId))
+            .orderBy(comment.createdAt.desc())
             .innerJoin(member)
             .on(comment.memberId.eq(member.id))
             .fetch()

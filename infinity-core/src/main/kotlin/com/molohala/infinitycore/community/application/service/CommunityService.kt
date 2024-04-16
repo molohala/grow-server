@@ -5,7 +5,7 @@ import com.molohala.infinitycommon.exception.custom.CustomException
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.req.CommunityModifyReq
 import com.molohala.infinitycore.community.application.dto.req.CommunitySaveReq
-import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
+import com.molohala.infinitycore.community.application.dto.res.CommunityRes
 import com.molohala.infinitycore.community.domain.consts.CommunityState
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.exception.CommunityNotFoundException
@@ -13,6 +13,7 @@ import com.molohala.infinitycore.community.repository.CommunityJpaRepository
 import com.molohala.infinitycore.community.repository.QueryCommunityRepository
 import com.molohala.infinitycore.like.repository.QueryLikeRepository
 import com.molohala.infinitycore.member.application.MemberSessionHolder
+import com.molohala.infinitycore.member.domain.entity.Member
 import com.molohala.infinitycore.member.domain.exception.AccessDeniedException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -38,24 +39,28 @@ class CommunityService(
         )
     }
 
-    fun getList(page: PageRequest): List<CommunityListRes> {
+    fun getList(page: PageRequest): List<CommunityRes> {
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
         return queryCommunityRepository.findWithPagination(page)
             .map {
-                CommunityListRes(
+                CommunityRes(
                     it.communityId,
                     it.content,
                     it.createdAt,
                     queryLikeRepository.getCntByCommunityId(it.communityId),
+                    queryLikeRepository.existsByCommunityIdAndMemberId(it.communityId,it.writerId),
                     it.writerName,
                     it.writerId
                 )
             }
     }
 
-    fun getById(id: Long): CommunityListRes? {
+    fun getById(id: Long): CommunityRes? {
+        val member: Member = memberSessionHolder.current()
         val likeCnt: Long = queryLikeRepository.getCntByCommunityId(id)
-        return queryCommunityRepository.findById(id, likeCnt)
+        val isLike: Boolean = queryLikeRepository
+            .existsByCommunityIdAndMemberId(id,member.id!!)
+        return queryCommunityRepository.findById(id, likeCnt, isLike)
     }
 
     @Transactional(rollbackFor = [Exception::class])

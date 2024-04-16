@@ -13,6 +13,9 @@ dependencies {
     implementation(project(":infinity-common"))
     implementation(project(":infinity-core"))
     implementation(project(":infinity-infra"))
+
+    testImplementation ("org.springframework.boot:spring-boot-starter-test")
+
 }
 
 tasks.bootJar {
