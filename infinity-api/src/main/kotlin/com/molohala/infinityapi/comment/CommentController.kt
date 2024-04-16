@@ -23,7 +23,7 @@ class CommentController(
         ResponseData.ok("댓글 조회 성공",commentService.get(communityId))
 
     @PatchMapping
-    fun modify(@RequestBody req: CommentModifyReq): Response {
+    fun modify(req: CommentModifyReq): Response {
         commentService.modify(req)
         return Response.ok("댓글 수정 성공")
     }
