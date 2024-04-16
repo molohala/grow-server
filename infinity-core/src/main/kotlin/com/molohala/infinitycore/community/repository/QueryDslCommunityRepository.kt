@@ -25,6 +25,7 @@ class QueryDslCommunityRepository(
                 communityProjection(0, false)
             )
             .from(community)
+            .orderBy(community.createdAt.desc())
             .innerJoin(member).on(community.memberId.eq(member.id))
             .offset((pageRequest.page - 1) * pageRequest.size)
             .limit(pageRequest.size)
