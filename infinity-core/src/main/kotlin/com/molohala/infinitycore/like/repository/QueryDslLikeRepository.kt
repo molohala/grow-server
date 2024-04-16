@@ -31,6 +31,4 @@ class QueryDslLikeRepository(
             .where(like.id.eq(communityId))
             .fetchCount()
     }
-
-
 }
