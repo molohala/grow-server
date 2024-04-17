@@ -18,5 +18,9 @@ class InfoController(
 
     @GetMapping("/solvedac")
     fun solvedAcInfo(@RequestParam("name") name: String)
-            = ResponseData.ok("솔브드 프로필 조회 완료", infoService.getSolvedAcInfo(name))
+        = ResponseData.ok("솔브드 프로필 조회 완료", infoService.getSolvedAcInfo(name))
+
+    @GetMapping("/me")
+    fun getMyUserInfo()
+        = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
 }
