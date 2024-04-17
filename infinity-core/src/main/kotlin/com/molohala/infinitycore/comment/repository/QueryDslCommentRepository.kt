@@ -22,6 +22,16 @@ class QueryDslCommentRepository(
             .fetch()
     }
 
+    override fun findRecentComment(communityId: Long): CommentRes? {
+        return queryFactory.select(commentProjection())
+            .from(comment)
+            .where(comment.communityId.eq(communityId))
+            .orderBy(comment.createdAt.desc())
+            .innerJoin(member)
+            .on(comment.memberId.eq(member.id))
+            .fetchFirst()
+    }
+
 
     private fun commentProjection(): ConstructorExpression<CommentRes> {
         return Projections.constructor(
