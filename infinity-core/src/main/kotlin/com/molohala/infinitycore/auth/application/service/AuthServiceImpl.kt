@@ -54,6 +54,7 @@ class AuthServiceImpl(
         issueJwtToken.reissueToken(reissueTokenReq.refreshToken)
 
     override fun test(email: String): Token {
+        println("엄")
         val member:Member? = memberJpaRepository.findByEmail(email)
         return issueJwtToken.issueToken(email, member!!.role)
     }

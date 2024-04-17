@@ -22,13 +22,12 @@ class LikeService(
         val isExist:Boolean = queryLikeRepository
             .existsByCommunityIdAndMemberId(communityId,member.id!!)
         if(isExist){
+            likeJpaRepository.delete(
+                queryLikeRepository.findByCommunityIdAndMemberId(communityId,member.id)
+            )
+        }else{
             likeJpaRepository.save(
                 Like(communityId, member.id)
-            )
-            }else{
-            likeJpaRepository.delete(
-                queryLikeRepository
-                    .findByCommunityIdAndMemberId(communityId,member.id)
             )
         }
     }
