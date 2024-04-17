@@ -2,9 +2,12 @@ package com.molohala.infinitycore.community.application.service
 
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
 import com.molohala.infinitycommon.exception.custom.CustomException
+import com.molohala.infinitycore.comment.application.dto.res.CommentRes
+import com.molohala.infinitycore.comment.repository.QueryCommentRepository
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.req.CommunityModifyReq
 import com.molohala.infinitycore.community.application.dto.req.CommunitySaveReq
+import com.molohala.infinitycore.community.application.dto.res.CommunityListRes
 import com.molohala.infinitycore.community.application.dto.res.CommunityRes
 import com.molohala.infinitycore.community.domain.consts.CommunityState
 import com.molohala.infinitycore.community.domain.entity.Community
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 class CommunityService(
     private val communityJpaRepository: CommunityJpaRepository,
     private val queryCommunityRepository: QueryCommunityRepository,
+    private val queryCommentRepository: QueryCommentRepository,
     private val queryLikeRepository: QueryLikeRepository,
     private val memberSessionHolder: MemberSessionHolder
 ) {
@@ -39,10 +43,10 @@ class CommunityService(
         )
     }
 
-    fun getList(page: PageRequest): List<CommunityRes> {
+    fun getList(page: PageRequest): List<CommunityListRes> {
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
-        return queryCommunityRepository.findWithPagination(page)
-            .map {
+        return queryCommunityRepository.findWithPagination(page).map {
+            CommunityListRes(
                 CommunityRes(
                     it.communityId,
                     it.content,
@@ -51,8 +55,9 @@ class CommunityService(
                     queryLikeRepository.existsByCommunityIdAndMemberId(it.communityId,it.writerId),
                     it.writerName,
                     it.writerId
-                )
-            }
+                ), queryCommentRepository.findRecentComment(it.communityId)
+            )
+        }
     }
 
     fun getById(id: Long): CommunityRes? {
