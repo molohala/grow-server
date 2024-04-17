@@ -5,8 +5,10 @@ import com.molohala.infinitycore.info.GithubInfoClient
 import com.molohala.infinitycore.info.SolvedAcInfoClient
 import com.molohala.infinitycore.info.application.dto.GithubUserInfo
 import com.molohala.infinitycore.info.application.dto.SolvedAcSolves
+import com.molohala.infinitycore.info.application.dto.res.MyInfoRes
 import com.molohala.infinitycore.info.application.dto.res.SolvedAcInfoRes
 import com.molohala.infinitycore.info.exception.InfoExceptionCode
+import com.molohala.infinitycore.member.application.MemberSessionHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -14,6 +16,7 @@ import java.time.LocalDate
 class InfoServiceImpl(
     private val githubInfoClient: GithubInfoClient,
     private val solvedAcInfoClient: SolvedAcInfoClient,
+    private val memberSessionHolder: MemberSessionHolder
 ) : InfoService {
     override fun getGithubInfo(name: String): GithubUserInfo {
         return githubInfoClient.getInfo(name) ?: throw CustomException(InfoExceptionCode.USER_NOT_FOUND)
@@ -38,6 +41,16 @@ class InfoServiceImpl(
             user.totalSolves,
             lastWeekSolves,
             grass.find { it.date == today } ?: SolvedAcSolves(today)
+        )
+    }
+
+    override fun getMyInfo(): MyInfoRes {
+        val cur = memberSessionHolder.current()
+        return MyInfoRes(
+            cur.id!!, // id won't be null
+            cur.email,
+            cur.name,
+            cur.createdAt,
         )
     }
 }
