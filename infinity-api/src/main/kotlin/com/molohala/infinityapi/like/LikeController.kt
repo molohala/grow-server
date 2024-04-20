@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class LikeController(
     private val likeService: LikeService
 ) {
-    @PatchMapping("/{id}")
+    @PatchMapping("{id}")
     fun patch(
         @PathVariable("id") id: Long
     ): Response {
