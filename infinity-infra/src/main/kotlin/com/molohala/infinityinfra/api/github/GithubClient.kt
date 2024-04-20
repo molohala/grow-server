@@ -2,6 +2,7 @@ package com.molohala.infinityinfra.api.github
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.molohala.infinitycore.info.GithubInfoClient
+import com.molohala.infinitycore.info.application.dto.GithubContribute
 import com.molohala.infinitycore.info.application.dto.GithubUserInfo
 import org.slf4j.LoggerFactory
 import org.springframework.graphql.client.HttpGraphQlClient
@@ -53,7 +54,7 @@ class GithubClient(
 
         val today = LocalDate.now()
         val weekContribute = today.minusDays(7).datesUntil(today).map { date ->
-            calendar.weeks.find { it.date == date }!! // NPE won't happen
+            calendar.weeks.find { it.date == date } ?: GithubContribute(date, 0)
         }
 
         return GithubUserInfo(
@@ -62,7 +63,7 @@ class GithubClient(
             bio = entity.bio,
             totalCommits = calendar.totalContributions,
             weekCommits = weekContribute.toList(),
-            todayCommits = calendar.weeks.find { it.date == today }!!
+            todayCommits = calendar.weeks.find { it.date == today } ?: GithubContribute(today, 0)
         )
     }
 }
