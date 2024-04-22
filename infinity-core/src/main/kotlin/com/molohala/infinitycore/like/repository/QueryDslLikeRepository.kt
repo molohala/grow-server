@@ -28,7 +28,7 @@ class QueryDslLikeRepository(
     override fun getCntByCommunityId(communityId: Long): Long {
         return queryFactory
             .selectFrom(like)
-            .where(like.id.eq(communityId))
+            .where(like.communityId.eq(communityId))
             .fetchCount()
     }
 }
