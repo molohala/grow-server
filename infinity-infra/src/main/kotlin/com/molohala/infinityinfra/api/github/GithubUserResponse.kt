@@ -14,9 +14,9 @@ data class GithubUserResponse @JsonCreator constructor(
 )
 
 data class GithubUser(
-    val name: String,
+    val name: String?,
     val avatarUrl: String,
-    val bio: String,
+    val bio: String?,
     val contributionsCollection: ContributionsCollection
 )
 

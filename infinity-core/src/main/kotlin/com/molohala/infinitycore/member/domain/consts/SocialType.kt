@@ -1,5 +1,5 @@
 package com.molohala.infinitycore.member.domain.consts
 
-enum class Social {
-    BAEKJOON, GITHUB
+enum class SocialType {
+    SOLVED_AC, GITHUB
 }

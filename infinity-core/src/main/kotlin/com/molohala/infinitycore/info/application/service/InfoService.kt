@@ -8,4 +8,6 @@ interface InfoService {
     fun getGithubInfo(name: String): GithubUserInfo
     fun getSolvedAcInfo(name: String): SolvedAcInfoRes
     fun getMyInfo(): MyInfoRes
+    fun submitGithubId(name: String)
+    fun submitSolvedAcInfo(name: String)
 }

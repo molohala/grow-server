@@ -7,4 +7,5 @@ data class MyInfoRes(
     val email: String,
     val name: String,
     val createdAt: LocalDateTime,
+    val socialAccounts: List<SocialAccountRes>,
 )
