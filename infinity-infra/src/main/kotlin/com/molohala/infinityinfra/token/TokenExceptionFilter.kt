@@ -21,6 +21,7 @@ class TokenExceptionFilter(private val errorResponseSender: ErrorResponseSender)
         } catch (e: WebClientException) {
             errorResponseSender.send(response, e.exceptionCode)
         } catch (e: Exception) {
+            e.printStackTrace()
             errorResponseSender.send(response, GlobalExceptionCode.INTERNAL_SERVER)
         }
     }
