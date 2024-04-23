@@ -1,18 +1,23 @@
 package com.molohala.infinitycore.member.domain.entity
 
-import com.molohala.infinitycore.member.domain.consts.Social
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
+import com.molohala.infinitycore.common.BaseIdAndTimeEntity
+import com.molohala.infinitycore.member.domain.consts.SocialType
+import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity(name = "tbl_social_account")
 class SocialAccount(
-    @Id
-    @Column(nullable = false, updatable = false)
-    private val id : String,
-    private val social: Social,
-    @Column(name = "fk_member_id",nullable = false)
-    private val memberId : Long
-) {
+    @Column(nullable = false)
+    val socialId: String,
 
-}
+    @field:Enumerated(EnumType.STRING)
+    @field:Column(nullable = false)
+    val socialType: SocialType,
+
+    @Column(name = "fk_member_id", nullable = false)
+    val memberId: Long,
+
+    // for projection
+    id: Long? = null,
+    createdAt: LocalDateTime? = null,
+) : BaseIdAndTimeEntity(id, createdAt)

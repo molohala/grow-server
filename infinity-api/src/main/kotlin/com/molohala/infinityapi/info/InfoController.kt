@@ -1,11 +1,11 @@
 package com.molohala.infinityapi.info
 
+import com.molohala.infinityapi.response.Response
 import com.molohala.infinityapi.response.ResponseData
+import com.molohala.infinitycore.info.application.dto.req.NewSocialAccountReq
 import com.molohala.infinitycore.info.application.service.InfoService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/info")
@@ -23,4 +23,16 @@ class InfoController(
     @GetMapping("/me")
     fun getMyUserInfo()
         = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
+
+    @PostMapping("/github")
+    fun uploadGithubInfo(@RequestBody @Valid data: NewSocialAccountReq): Response {
+        infoService.submitGithubId(data.socialId)
+        return Response.ok("깃헙 아이디 생성/갱신 완료")
+    }
+
+    @PostMapping("/solvedac")
+    fun uploadSolvedAcInfo(@RequestBody @Valid data: NewSocialAccountReq): Response {
+        infoService.submitSolvedAcInfo(data.socialId)
+        return Response.ok("솔브드 아이디 생성/갱신 완료")
+    }
 }
