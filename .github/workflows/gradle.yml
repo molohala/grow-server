@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: ["develop"]
+    branches: [ "develop" ]
   pull_request:
-    branches: ["develop"] 
+    branches: [ "develop" ]
 
 permissions:
   contents: read
@@ -50,11 +50,11 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
           # 도커 작업
           script: |
-            sudo docker stop $(docker ps -a -q)
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
-            sudo docker image prune -a -f
+            sudo docker rm -f $(docker ps -a -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/grow)
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/grow:latest
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/grow:latest
             
-            sudo docker run -d --name grow_app --log-driver=syslog -p 80:8080 \
+            sudo docker run -d --name grow-app --log-driver=syslog -p 80:8080 \
               ${{ secrets.DOCKER_USERNAME }}/grow:latest
+            sudo docker network connect redis-network $(docker ps -a -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/grow)
