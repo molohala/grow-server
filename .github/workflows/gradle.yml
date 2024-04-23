@@ -50,9 +50,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
           # 도커 작업
           script: |
-            sudo docker stop grow
-            sudo docker rm grow
-            sudo docker rmi 
+            sudo docker rm -f $(docker ps -a -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/grow)
             sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/grow:latest
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/grow:latest
