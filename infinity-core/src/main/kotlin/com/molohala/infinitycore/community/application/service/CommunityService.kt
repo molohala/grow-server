@@ -2,7 +2,6 @@ package com.molohala.infinitycore.community.application.service
 
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
 import com.molohala.infinitycommon.exception.custom.CustomException
-import com.molohala.infinitycore.comment.application.dto.res.CommentRes
 import com.molohala.infinitycore.comment.repository.QueryCommentRepository
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.req.CommunityModifyReq
@@ -73,7 +72,7 @@ class CommunityService(
         val community = communityJpaRepository
             .findByIdOrNull(communityModifyReq.id)?: throw CommunityNotFoundException()
         val curMember = memberSessionHolder.current()
-        if(curMember.id != community.id){
+        if(curMember.id != community.memberId){
             throw AccessDeniedException()
         }
         community.modify(communityModifyReq.content)
@@ -84,7 +83,7 @@ class CommunityService(
         val community = communityJpaRepository
             .findByIdOrNull(id)?: throw CommunityNotFoundException()
         val curMember = memberSessionHolder.current()
-        if(curMember.id != community.id){
+        if(curMember.id != community.memberId){
             throw AccessDeniedException()
         }
         community.delete()
