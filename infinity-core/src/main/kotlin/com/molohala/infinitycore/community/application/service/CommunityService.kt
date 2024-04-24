@@ -73,7 +73,7 @@ class CommunityService(
         val community = communityJpaRepository
             .findByIdOrNull(communityModifyReq.id)?: throw CommunityNotFoundException()
         val curMember = memberSessionHolder.current()
-        if(curMember.id != community.id){
+        if(curMember.id != community.memberId){
             throw AccessDeniedException()
         }
         community.modify(communityModifyReq.content)
@@ -84,7 +84,7 @@ class CommunityService(
         val community = communityJpaRepository
             .findByIdOrNull(id)?: throw CommunityNotFoundException()
         val curMember = memberSessionHolder.current()
-        if(curMember.id != community.id){
+        if(curMember.id != community.memberId){
             throw AccessDeniedException()
         }
         community.delete()
