@@ -76,6 +76,7 @@ class InfoServiceImpl(
 
         // social exist check
         githubInfoClient.getInfo(name)
+            ?: throw CustomException(InfoExceptionCode.USER_NOT_FOUND)
         // if no error thrown, then create
 
         val socialExist = socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.GITHUB)
@@ -92,6 +93,7 @@ class InfoServiceImpl(
 
         // social exist check
         solvedAcInfoClient.getUserInfo(name)
+            ?: throw CustomException(InfoExceptionCode.USER_NOT_FOUND)
         // if no error thrown, then create
 
         val socialExist = socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.SOLVED_AC)
