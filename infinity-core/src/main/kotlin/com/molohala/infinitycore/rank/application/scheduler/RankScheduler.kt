@@ -23,18 +23,17 @@ class RankScheduler(
     @Scheduled(fixedRate = 1000L * 60L * 60L)
     fun githubScheduler() {
         val accounts = socialAccountJpaRepository.findSocialAccountsBySocialType(SocialType.GITHUB)
-            .iterator()
-
+        val iter = accounts.iterator()
         val service = Executors.newFixedThreadPool(4) as ThreadPoolExecutor
 
         val infos = hashMapOf<Long, GithubUserInfo>()
-        while (accounts.hasNext()) {
+        while (iter.hasNext()) {
             if (service.activeCount == service.maximumPoolSize) {
                 Thread.sleep(100L) // wait for finish
                 continue
             }
             val run = Runnable {
-                val nextAccount = accounts.next()
+                val nextAccount = iter.next()
                 githubInfoClient.getInfo(nextAccount.socialId)?.let {
                     infos[nextAccount.memberId] = it
                 }
@@ -42,8 +41,13 @@ class RankScheduler(
             service.submit(run).cancel(false)
         }
 
-        service.awaitTermination(1, TimeUnit.SECONDS)
         service.shutdown()
+        service.awaitTermination(10, TimeUnit.SECONDS) // yes
+
+        while (service.activeCount > 0) {
+            logger.info("waiting cause executor service is running.. (bruh)")
+            Thread.sleep(100L) // Awaited but not finishing well
+        }
 
         val zSet = redisTemplate.opsForZSet()
         logger.info("got: {}", infos.size)
