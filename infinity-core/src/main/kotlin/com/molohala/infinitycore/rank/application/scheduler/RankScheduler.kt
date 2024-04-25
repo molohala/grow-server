@@ -3,8 +3,8 @@ package com.molohala.infinitycore.rank.application.scheduler
 import com.molohala.infinitycore.info.GithubInfoClient
 import com.molohala.infinitycore.info.application.dto.GithubUserInfo
 import com.molohala.infinitycore.member.domain.consts.SocialType
-import com.molohala.infinitycore.member.domain.entity.RedisSocialAccount
-import com.molohala.infinitycore.member.repository.SocialAccountJpaRepository
+import com.molohala.infinitycore.member.repository.SocialAccountQueryRepository
+import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,13 +17,13 @@ import java.util.concurrent.TimeUnit
 class RankScheduler(
     val redisTemplate: RedisTemplate<String, RedisSocialAccount>,
     val githubInfoClient: GithubInfoClient,
-    val socialAccountJpaRepository: SocialAccountJpaRepository
+    val socialAccountJpaRepository: SocialAccountQueryRepository
 ) {
     private val logger = LoggerFactory.getLogger(RankScheduler::class.java)
 
     @Scheduled(fixedRate = 1000L * 60L * 60L)
     fun githubScheduler() {
-        val accounts = socialAccountJpaRepository.findSocialAccountsBySocialType(SocialType.GITHUB)
+        val accounts = socialAccountJpaRepository.getSocialAccountsWithMemberInfo(SocialType.GITHUB)
         val iter = accounts.iterator()
         val service = Executors.newFixedThreadPool(4) as ThreadPoolExecutor
 
@@ -36,7 +36,7 @@ class RankScheduler(
             val run = Runnable {
                 val nextAccount = iter.next()
                 githubInfoClient.getInfo(nextAccount.socialId)?.let {
-                    infos[RedisSocialAccount.from(nextAccount)] = it
+                    infos[nextAccount] = it
                 }
             }
             service.submit(run).cancel(false)

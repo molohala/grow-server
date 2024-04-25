@@ -1,7 +1,7 @@
 package com.molohala.infinitycore.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.molohala.infinitycore.member.domain.entity.RedisSocialAccount
+import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory

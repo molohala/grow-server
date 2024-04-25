@@ -1,6 +1,6 @@
 package com.molohala.infinitycore.rank.application.service
 
-import com.molohala.infinitycore.member.domain.entity.RedisSocialAccount
+import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
 import com.molohala.infinitycore.rank.domain.dto.res.GithubRankingRes
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -38,7 +38,7 @@ class RankServiceImpl(
                 keepCount++
             }
             prevScore = score
-            GithubRankingRes(value.memberId, value.socialId, rank, score)
+            GithubRankingRes(value.memberId, value.name, value.socialId, rank, score)
         }
         return map
     }
