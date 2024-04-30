@@ -53,12 +53,18 @@ class RankScheduler(
         val zSet = redisTemplate.opsForZSet()
         logger.info("got: {}", infos.size)
 
-        for ((key, inf) in infos) {
-            zSet.remove("githubWeek", key)
-            zSet.remove("githubToday", key)
-            zSet.add("githubTotal", key, inf.totalCommits.toDouble())
-            zSet.add("githubWeek", key, inf.weekCommits.sumOf { it.contributionCount }.toDouble())
-            zSet.add("githubToday", key, inf.todayCommits.contributionCount.toDouble())
+        redisTemplate.delete(
+                listOf(
+                    "githubWeek",
+                    "githubToday",
+                    "githubTotal"
+                )
+            )
+
+        for ((userInfo, inf) in infos) {
+            zSet.add("githubTotal", userInfo, inf.totalCommits.toDouble())
+            zSet.add("githubWeek", userInfo, inf.weekCommits.sumOf { it.contributionCount }.toDouble())
+            zSet.add("githubToday", userInfo, inf.todayCommits.contributionCount.toDouble())
         }
 
         logger.info("fin. {} {} {}", service.isTerminating, service.isShutdown, service.activeCount)

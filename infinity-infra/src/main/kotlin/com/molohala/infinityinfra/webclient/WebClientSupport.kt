@@ -3,6 +3,7 @@ package com.molohala.infinityinfra.webclient
 import com.molohala.infinitycommon.exception.GlobalExceptionCode
 import com.molohala.infinitycommon.exception.custom.CustomException
 import com.molohala.infinityinfra.webclient.exception.WebClientException
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatusCode
@@ -11,6 +12,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
 @Component
@@ -55,7 +57,12 @@ class WebClientSupport(
 
     private fun onError(response: ClientResponse): Mono<Throwable> {
         log.error("WebClient Error Status : ${response.statusCode()}")
-        log.error("WebClient Error Body : ${response.bodyToMono(String::class.java)}")
+        runBlocking {
+            response.bodyToMono<String>()
+                .subscribe {
+                    log.error("WebClient Error Body : $it")
+                }
+        }
         throw WebClientException(response.statusCode().value())
     }
 

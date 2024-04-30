@@ -12,6 +12,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestControllerAdvice
 class CustomExceptionHandler {
@@ -100,6 +101,19 @@ class CustomExceptionHandler {
                 code = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.name,
                 message = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.getMessage()
             )
+            )
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    protected fun handleException(e: NoResourceFoundException): ResponseEntity<ErrorResponseEntity> {
+        return ResponseEntity
+            .status(404)
+            .body(
+                ErrorResponseEntity(
+                    status = GlobalExceptionCode.RESOURCE_NOT_FOUND.getHttpStatus().value(),
+                    code = GlobalExceptionCode.RESOURCE_NOT_FOUND.name,
+                    message = GlobalExceptionCode.RESOURCE_NOT_FOUND.getMessage()
+                )
             )
     }
 

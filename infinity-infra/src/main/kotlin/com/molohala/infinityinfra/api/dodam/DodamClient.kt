@@ -3,6 +3,8 @@ package com.molohala.infinityinfra.api.dodam
 import com.molohala.infinitycore.auth.DodamMemberClient
 import com.molohala.infinitycore.auth.application.dto.DodamUserData
 import com.molohala.infinityinfra.webclient.WebClientSupport
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -27,11 +29,13 @@ class DodamClient(
         code: String
     ): DodamUserData? {
         val token: String? = issueDodamToken(code)
-        val dodamUser: DodamUserData? = webClientSupport.get(
-            dodamProperties.infoUrl,
-            DodamUserResponse::class.java,
-            *arrayOf("Authorization", "Bearer $token")
-        ).block()?.data
+        val dodamUser: DodamUserData? = withContext(Dispatchers.IO) {
+            webClientSupport.get(
+                dodamProperties.infoUrl,
+                DodamUserResponse::class.java,
+                *arrayOf("Authorization", "Bearer $token")
+            ).block()
+        }?.data
         return dodamUser
     }
 }

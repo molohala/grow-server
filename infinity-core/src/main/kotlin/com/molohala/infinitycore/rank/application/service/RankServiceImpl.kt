@@ -2,6 +2,7 @@ package com.molohala.infinitycore.rank.application.service
 
 import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
 import com.molohala.infinitycore.rank.domain.dto.res.GithubRankingRes
+import jakarta.transaction.Transactional
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 
@@ -9,14 +10,17 @@ import org.springframework.stereotype.Service
 class RankServiceImpl(
     val redisTemplate: RedisTemplate<String, RedisSocialAccount>
 ) : RankService {
+    @Transactional(rollbackOn = [Exception::class])
     override fun getGithubTotalRanking(): List<GithubRankingRes> {
         return getRankForKey("githubTotal", 10)
     }
 
+    @Transactional(rollbackOn = [Exception::class])
     override fun getGithubWeekRanking(): List<GithubRankingRes> {
         return getRankForKey("githubWeek", 10)
     }
 
+    @Transactional(rollbackOn = [Exception::class])
     override fun getGithubTodayRanking(): List<GithubRankingRes> {
         return getRankForKey("githubToday", 10)
     }

@@ -6,7 +6,7 @@ data class DodamUserData(
     val room: Long,
     val number: Long,
     val name: String,
-    val profileImage: String,
+    val profileImage: String?,
     val role: String,
     val email: String
 )
