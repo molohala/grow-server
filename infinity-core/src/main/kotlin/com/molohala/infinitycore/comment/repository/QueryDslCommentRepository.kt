@@ -1,6 +1,7 @@
 package com.molohala.infinitycore.comment.repository
 
 import com.molohala.infinitycore.comment.application.dto.res.CommentRes
+import com.molohala.infinitycore.comment.domain.consts.CommentState
 import com.molohala.infinitycore.comment.domain.entity.QComment.comment
 import com.molohala.infinitycore.member.domain.entity.QMember.member
 import com.querydsl.core.types.ConstructorExpression
@@ -15,7 +16,7 @@ class QueryDslCommentRepository(
     override fun findByCommunityId(communityId: Long): List<CommentRes>? {
         return queryFactory.select(commentProjection())
             .from(comment)
-            .where(comment.communityId.eq(communityId))
+            .where(comment.communityId.eq(communityId).and(comment.commentState.ne(CommentState.DELETED)))
             .orderBy(comment.createdAt.desc())
             .innerJoin(member)
             .on(comment.memberId.eq(member.id))
@@ -25,7 +26,7 @@ class QueryDslCommentRepository(
     override fun findRecentComment(communityId: Long): CommentRes? {
         return queryFactory.select(commentProjection())
             .from(comment)
-            .where(comment.communityId.eq(communityId))
+            .where(comment.communityId.eq(communityId).and(comment.commentState.ne(CommentState.DELETED)))
             .orderBy(comment.createdAt.desc())
             .innerJoin(member)
             .on(comment.memberId.eq(member.id))

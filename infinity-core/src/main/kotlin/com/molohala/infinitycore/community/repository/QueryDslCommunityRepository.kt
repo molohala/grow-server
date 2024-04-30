@@ -2,6 +2,7 @@ package com.molohala.infinitycore.community.repository
 
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.res.CommunityRes
+import com.molohala.infinitycore.community.domain.consts.CommunityState
 import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.entity.QCommunity.community
 import com.molohala.infinitycore.member.domain.entity.QMember.member
@@ -25,6 +26,7 @@ class QueryDslCommunityRepository(
                 communityProjection(0, false)
             )
             .from(community)
+            .where(community.state.ne(CommunityState.DELETED))
             .orderBy(community.createdAt.desc())
             .innerJoin(member).on(community.memberId.eq(member.id))
             .offset((pageRequest.page - 1) * pageRequest.size)
@@ -37,7 +39,7 @@ class QueryDslCommunityRepository(
             .select(communityProjection(likeCnt, isLike))
             .from(community)
             .innerJoin(member).on(community.memberId.eq(member.id))
-            .where(community.id.eq(id))
+            .where(community.id.eq(id).and(community.state.ne(CommunityState.DELETED)))
             .fetchFirst()
     }
 
