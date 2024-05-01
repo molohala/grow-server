@@ -1,7 +1,7 @@
 package com.molohala.infinitycore.rank.application.service
 
 import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
-import com.molohala.infinitycore.rank.domain.dto.res.GithubRankingRes
+import com.molohala.infinitycore.rank.domain.dto.res.RankingRes
 import jakarta.transaction.Transactional
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -11,28 +11,40 @@ class RankServiceImpl(
     val redisTemplate: RedisTemplate<String, RedisSocialAccount>
 ) : RankService {
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubTotalRanking(): List<GithubRankingRes> {
-        return getRankForKey("githubTotal", 10)
+    override fun getGithubTotalRanking(): List<RankingRes> {
+        return getRankForKey("githubTotal")
     }
 
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubWeekRanking(): List<GithubRankingRes> {
-        return getRankForKey("githubWeek", 10)
+    override fun getGithubWeekRanking(): List<RankingRes> {
+        return getRankForKey("githubWeek")
     }
 
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubTodayRanking(): List<GithubRankingRes> {
-        return getRankForKey("githubToday", 10)
+    override fun getGithubTodayRanking(): List<RankingRes> {
+        return getRankForKey("githubToday")
+    }
+
+    override fun getSolvedAcTotalRanking(): List<RankingRes> {
+        return getRankForKey("solvedAcTotal")
+    }
+
+    override fun getSolvedAcWeekRanking(): List<RankingRes> {
+        return getRankForKey("solvedAcWeek")
+    }
+
+    override fun getSolvedAcTodayRanking(): List<RankingRes> {
+        return getRankForKey("solvedAcToday")
     }
 
     @Suppress("SameParameterValue")
-    private fun getRankForKey(key: String, size: Long): List<GithubRankingRes> {
+    private fun getRankForKey(key: String): List<RankingRes> {
         val zSet = redisTemplate.opsForZSet()
 
         var rank = 0
         var keepCount = 0
         var prevScore = -1L
-        val map = zSet.reverseRangeWithScores(key, 0, size)!!.map {
+        val map = zSet.reverseRangeWithScores(key, 0, -1)!!.map {
             val value = it.value!!
             val score = it.score!!.toLong()
             if (prevScore != score) {
@@ -42,7 +54,7 @@ class RankServiceImpl(
                 keepCount++
             }
             prevScore = score
-            GithubRankingRes(value.memberId, value.name, value.socialId, rank, score)
+            RankingRes(value.memberId, value.name, value.socialId, rank, score)
         }
         return map
     }
