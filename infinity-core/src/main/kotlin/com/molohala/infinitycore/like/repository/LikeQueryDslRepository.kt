@@ -6,9 +6,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class QueryDslLikeRepository(
+class LikeQueryDslRepository(
     private val queryFactory: JPAQueryFactory
-): QueryLikeRepository {
+) : LikeQueryRepository {
     override fun existsByCommunityIdAndMemberId(communityId: Long, memberId: Long): Boolean {
         return queryFactory
             .selectOne()

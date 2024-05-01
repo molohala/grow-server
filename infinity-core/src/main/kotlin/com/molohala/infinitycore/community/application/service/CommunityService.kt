@@ -13,7 +13,7 @@ import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.exception.CommunityNotFoundException
 import com.molohala.infinitycore.community.repository.CommunityJpaRepository
 import com.molohala.infinitycore.community.repository.QueryCommunityRepository
-import com.molohala.infinitycore.like.repository.QueryLikeRepository
+import com.molohala.infinitycore.like.repository.LikeQueryRepository
 import com.molohala.infinitycore.member.application.MemberSessionHolder
 import com.molohala.infinitycore.member.domain.entity.Member
 import com.molohala.infinitycore.member.domain.exception.AccessDeniedException
@@ -27,7 +27,7 @@ class CommunityService(
     private val communityJpaRepository: CommunityJpaRepository,
     private val queryCommunityRepository: QueryCommunityRepository,
     private val queryCommentRepository: QueryCommentRepository,
-    private val queryLikeRepository: QueryLikeRepository,
+    private val likeQueryRepository: LikeQueryRepository,
     private val memberSessionHolder: MemberSessionHolder
 ) {
 
@@ -50,8 +50,8 @@ class CommunityService(
                     it.communityId,
                     it.content,
                     it.createdAt,
-                    queryLikeRepository.getCntByCommunityId(it.communityId),
-                    queryLikeRepository.existsByCommunityIdAndMemberId(it.communityId,it.writerId),
+                    likeQueryRepository.getCntByCommunityId(it.communityId),
+                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId,it.writerId),
                     it.writerName,
                     it.writerId
                 ), queryCommentRepository.findRecentComment(it.communityId)
@@ -61,8 +61,8 @@ class CommunityService(
 
     fun getById(id: Long): CommunityRes? {
         val member: Member = memberSessionHolder.current()
-        val likeCnt: Long = queryLikeRepository.getCntByCommunityId(id)
-        val isLike: Boolean = queryLikeRepository
+        val likeCnt: Long = likeQueryRepository.getCntByCommunityId(id)
+        val isLike: Boolean = likeQueryRepository
             .existsByCommunityIdAndMemberId(id,member.id!!)
         return queryCommunityRepository.findById(id, likeCnt, isLike)
     }
