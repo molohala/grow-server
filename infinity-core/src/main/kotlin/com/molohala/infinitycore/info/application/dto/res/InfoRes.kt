@@ -2,7 +2,7 @@ package com.molohala.infinitycore.info.application.dto.res
 
 import java.time.LocalDateTime
 
-data class MyInfoRes(
+data class InfoRes(
     val id: Long,
     val email: String,
     val name: String,

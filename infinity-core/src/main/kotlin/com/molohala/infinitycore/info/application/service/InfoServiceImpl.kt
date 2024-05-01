@@ -5,13 +5,14 @@ import com.molohala.infinitycore.info.GithubInfoClient
 import com.molohala.infinitycore.info.SolvedAcInfoClient
 import com.molohala.infinitycore.info.application.dto.GithubUserInfo
 import com.molohala.infinitycore.info.application.dto.SolvedAcSolves
-import com.molohala.infinitycore.info.application.dto.res.MyInfoRes
+import com.molohala.infinitycore.info.application.dto.res.InfoRes
 import com.molohala.infinitycore.info.application.dto.res.SocialAccountRes
 import com.molohala.infinitycore.info.application.dto.res.SolvedAcInfoRes
 import com.molohala.infinitycore.info.exception.InfoExceptionCode
 import com.molohala.infinitycore.member.application.MemberSessionHolder
 import com.molohala.infinitycore.member.domain.consts.SocialType
 import com.molohala.infinitycore.member.domain.entity.SocialAccount
+import com.molohala.infinitycore.member.repository.MemberJpaRepository
 import com.molohala.infinitycore.member.repository.SocialAccountJpaRepository
 import com.molohala.infinitycore.member.repository.SocialAccountQueryRepository
 import jakarta.transaction.Transactional
@@ -23,6 +24,7 @@ class InfoServiceImpl(
     private val githubInfoClient: GithubInfoClient,
     private val solvedAcInfoClient: SolvedAcInfoClient,
     private val memberSessionHolder: MemberSessionHolder,
+    private val memberJpaRepository: MemberJpaRepository,
     private val socialAccountJpaRepository: SocialAccountJpaRepository,
     private val socialAccountQueryRepository: SocialAccountQueryRepository,
 ) : InfoService {
@@ -52,7 +54,7 @@ class InfoServiceImpl(
         )
     }
 
-    override fun getMyInfo(): MyInfoRes {
+    override fun getMyInfo(): InfoRes {
         val member = memberSessionHolder.current()
         val socials = socialAccountJpaRepository.findSocialAccountsByMemberId(member.id!!) // id won't be null
             .map {
@@ -61,7 +63,26 @@ class InfoServiceImpl(
                     it.socialType
                 )
             }
-        return MyInfoRes(
+        return InfoRes(
+            member.id,
+            member.email,
+            member.name,
+            member.createdAt,
+            socials
+        )
+    }
+
+    override fun getUserInfo(userId: Long): InfoRes {
+        val member = memberJpaRepository.findById(userId)
+            .orElseThrow { CustomException(InfoExceptionCode.USER_NOT_FOUND) }
+        val socials = socialAccountJpaRepository.findSocialAccountsByMemberId(member.id!!) // id won't be null
+            .map {
+                SocialAccountRes(
+                    it.socialId,
+                    it.socialType
+                )
+            }
+        return InfoRes(
             member.id,
             member.email,
             member.name,
@@ -79,7 +100,8 @@ class InfoServiceImpl(
             ?: throw CustomException(InfoExceptionCode.USER_NOT_FOUND)
         // if no error thrown, then create
 
-        val socialExist = socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.GITHUB)
+        val socialExist =
+            socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.GITHUB)
         if (socialExist != null) // btw, if social account already exists, it will be deleted.
             socialAccountJpaRepository.deleteById(socialExist.id!!)
         // TODO: Clear cache when ranking system created
@@ -96,7 +118,8 @@ class InfoServiceImpl(
             ?: throw CustomException(InfoExceptionCode.USER_NOT_FOUND)
         // if no error thrown, then create
 
-        val socialExist = socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.SOLVED_AC)
+        val socialExist =
+            socialAccountQueryRepository.findSocialAccountByMemberIdAndType(member.id!!, SocialType.SOLVED_AC)
         if (socialExist != null) // btw, if social account already exists, it will be deleted.
             socialAccountJpaRepository.deleteById(socialExist.id!!)
         // TODO: Clear cache when ranking system created
