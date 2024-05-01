@@ -2,15 +2,13 @@ package com.molohala.infinitycore.rank.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
+import com.molohala.infinitycore.utils.RedisUtils
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
-import org.springframework.data.redis.serializer.RedisSerializer
-import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
 @EnableRedisRepositories
@@ -19,19 +17,9 @@ class RankRedisConfig(
 ) {
     @Bean
     fun rankRedisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisSocialAccount> {
-        return createTemplate(connectionFactory,
+        return RedisUtils.createTemplate(
+            connectionFactory,
             Jackson2JsonRedisSerializer(objectMapper, RedisSocialAccount::class.java)
         )
-    }
-
-    private fun <K, V, S : RedisSerializer<*>> createTemplate(factory: RedisConnectionFactory, valueSerializer: S): RedisTemplate<K, V> {
-        val redisTemplate = RedisTemplate<K, V>()
-        redisTemplate.connectionFactory = factory
-        redisTemplate.keySerializer = StringRedisSerializer()
-        redisTemplate.valueSerializer = valueSerializer
-        redisTemplate.hashKeySerializer = StringRedisSerializer()
-        redisTemplate.hashValueSerializer = GenericJackson2JsonRedisSerializer()
-        redisTemplate.afterPropertiesSet()
-        return redisTemplate
     }
 }
