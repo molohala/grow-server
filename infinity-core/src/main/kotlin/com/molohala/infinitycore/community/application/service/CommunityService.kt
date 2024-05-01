@@ -13,6 +13,7 @@ import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.exception.CommunityNotFoundException
 import com.molohala.infinitycore.community.repository.CommunityJpaRepository
 import com.molohala.infinitycore.community.repository.CommunityQueryRepository
+import com.molohala.infinitycore.like.repository.LikeCachedRepository
 import com.molohala.infinitycore.like.repository.LikeQueryRepository
 import com.molohala.infinitycore.member.application.MemberSessionHolder
 import com.molohala.infinitycore.member.domain.entity.Member
@@ -27,19 +28,21 @@ class CommunityService(
     private val communityJpaRepository: CommunityJpaRepository,
     private val queryCommunityRepository: CommunityQueryRepository,
     private val queryCommentRepository: QueryCommentRepository,
+    private val likeCachedRepository: LikeCachedRepository,
     private val likeQueryRepository: LikeQueryRepository,
     private val memberSessionHolder: MemberSessionHolder,
 ) {
 
     @Transactional(rollbackFor = [Exception::class])
     fun save(communitySaveReq: CommunitySaveReq) {
-        communityJpaRepository.save(
+        val entity = communityJpaRepository.save(
             Community(
                 communitySaveReq.content,
                 CommunityState.ACTIVE,
                 memberSessionHolder.current().id!!
             )
         )
+        likeCachedRepository.cache(entity.id!!, 0)
     }
 
     fun getList(page: PageRequest): List<CommunityListRes> {
@@ -86,6 +89,17 @@ class CommunityService(
         if (curMember.id != community.memberId) {
             throw AccessDeniedException()
         }
+        likeCachedRepository.clear(id)
         community.delete()
+    }
+
+    fun getBestCommunity(count: Int): List<CommunityRes> {
+        val member: Member = memberSessionHolder.current()
+        return likeCachedRepository.getAll().take(count) // sorted
+            .map {
+                val didLiked =
+                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!)
+                queryCommunityRepository.findById(it.communityId, it.likeCount, didLiked) ?: throw CommunityNotFoundException()
+            }
     }
 }

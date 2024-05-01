@@ -49,4 +49,9 @@ class CommunityController(
         communityService.delete(id)
         return Response.ok("커뮤니티 삭제 성공")
     }
+
+    @GetMapping("/best")
+    fun bestCommunities(@RequestParam("count", required = false) count: Int = 5): ResponseData<List<CommunityRes>> {
+        return ResponseData.ok("인기글 조회 성공", communityService.getBestCommunity(count))
+    }
 }

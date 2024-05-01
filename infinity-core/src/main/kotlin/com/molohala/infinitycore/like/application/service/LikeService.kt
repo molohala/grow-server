@@ -1,6 +1,7 @@
 package com.molohala.infinitycore.like.application.service
 
 import com.molohala.infinitycore.like.domain.entity.Like
+import com.molohala.infinitycore.like.repository.LikeCachedRepository
 import com.molohala.infinitycore.like.repository.LikeJpaRepository
 import com.molohala.infinitycore.like.repository.LikeQueryRepository
 import com.molohala.infinitycore.member.application.MemberSessionHolder
@@ -13,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 class LikeService(
     private val likeJpaRepository: LikeJpaRepository,
     private val likeQueryRepository: LikeQueryRepository,
-    private val memberSessionHolder: MemberSessionHolder
+    private val likeCachedRepository: LikeCachedRepository,
+    private val memberSessionHolder: MemberSessionHolder,
 ) {
-
     @Transactional(rollbackFor = [Exception::class])
     fun patch(communityId: Long) {
         val member: Member = memberSessionHolder.current()
@@ -30,9 +31,14 @@ class LikeService(
                 Like(communityId, member.id)
             )
         }
+
+        val countToCache = likeQueryRepository.getCntByCommunityId(communityId)
+        likeCachedRepository.cache(communityId, countToCache)
     }
 
     fun getCnt(communityId: Long): Long {
-        return likeQueryRepository.getCntByCommunityId(communityId)
+        val count = likeQueryRepository.getCntByCommunityId(communityId)
+        likeCachedRepository.cache(communityId, count)
+        return count
     }
 }
