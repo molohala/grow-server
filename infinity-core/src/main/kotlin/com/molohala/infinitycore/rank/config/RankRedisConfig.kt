@@ -1,4 +1,4 @@
-package com.molohala.infinitycore.common
+package com.molohala.infinitycore.rank.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.molohala.infinitycore.rank.domain.dto.RedisSocialAccount
@@ -12,16 +12,16 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
-
 @Configuration
 @EnableRedisRepositories
-class RedisConfig(
+class RankRedisConfig(
     private val objectMapper: ObjectMapper,
 ) {
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisSocialAccount> {
-        return createTemplate(connectionFactory, Jackson2JsonRedisSerializer(objectMapper, RedisSocialAccount::class.java))
-//        return StringRedisTemplate().apply { connectionFactory = redisConnectionFactory() }
+    fun rankRedisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisSocialAccount> {
+        return createTemplate(connectionFactory,
+            Jackson2JsonRedisSerializer(objectMapper, RedisSocialAccount::class.java)
+        )
     }
 
     private fun <K, V, S : RedisSerializer<*>> createTemplate(factory: RedisConnectionFactory, valueSerializer: S): RedisTemplate<K, V> {
