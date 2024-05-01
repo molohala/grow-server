@@ -17,15 +17,15 @@ class LikeService(
 ) {
 
     @Transactional(rollbackFor = [Exception::class])
-    fun patch(communityId: Long){
+    fun patch(communityId: Long) {
         val member: Member = memberSessionHolder.current()
-        val isExist:Boolean = queryLikeRepository
-            .existsByCommunityIdAndMemberId(communityId,member.id!!)
-        if(isExist){
+        val isExist: Boolean = queryLikeRepository
+            .existsByCommunityIdAndMemberId(communityId, member.id!!)
+        if (isExist) {
             likeJpaRepository.delete(
-                queryLikeRepository.findByCommunityIdAndMemberId(communityId,member.id)
+                queryLikeRepository.findByCommunityIdAndMemberId(communityId, member.id)
             )
-        }else{
+        } else {
             likeJpaRepository.save(
                 Like(communityId, member.id)
             )
