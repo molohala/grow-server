@@ -1,9 +1,13 @@
 package com.molohala.infinitycore.rank.application.service
 
-import com.molohala.infinitycore.rank.domain.dto.res.GithubRankingRes
+import com.molohala.infinitycore.rank.domain.dto.res.RankingRes
 
 interface RankService {
-    fun getGithubTotalRanking(): List<GithubRankingRes>
-    fun getGithubWeekRanking(): List<GithubRankingRes>
-    fun getGithubTodayRanking(): List<GithubRankingRes>
+    fun getGithubTotalRanking(): List<RankingRes>
+    fun getGithubWeekRanking(): List<RankingRes>
+    fun getGithubTodayRanking(): List<RankingRes>
+
+    fun getSolvedAcTotalRanking(): List<RankingRes>
+    fun getSolvedAcWeekRanking(): List<RankingRes>
+    fun getSolvedAcTodayRanking(): List<RankingRes>
 }
