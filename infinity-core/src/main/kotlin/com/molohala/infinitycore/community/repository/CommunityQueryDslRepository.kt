@@ -3,23 +3,18 @@ package com.molohala.infinitycore.community.repository
 import com.molohala.infinitycore.common.PageRequest
 import com.molohala.infinitycore.community.application.dto.res.CommunityRes
 import com.molohala.infinitycore.community.domain.consts.CommunityState
-import com.molohala.infinitycore.community.domain.entity.Community
 import com.molohala.infinitycore.community.domain.entity.QCommunity.community
 import com.molohala.infinitycore.member.domain.entity.QMember.member
 import com.querydsl.core.types.ConstructorExpression
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
-import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class QueryDslCommunityRepository(
+class CommunityQueryDslRepository(
     private val queryFactory: JPAQueryFactory
-): QueryCommunityRepository {
-    val query: JPAQuery<Community> = queryFactory.select(community)
-        .from(community)
-
+): CommunityQueryRepository {
     override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
         return queryFactory
             .select(
