@@ -48,12 +48,14 @@ class CommunityService(
     fun getList(page: PageRequest): List<CommunityListRes> {
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
         return queryCommunityRepository.findWithPagination(page).map {
+            val likedCount = likeQueryRepository.getCntByCommunityId(it.communityId)
+            likeCachedRepository.cache(it.communityId, likedCount)
             CommunityListRes(
                 CommunityRes(
                     it.communityId,
                     it.content,
                     it.createdAt,
-                    likeQueryRepository.getCntByCommunityId(it.communityId),
+                    likedCount,
                     likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, it.writerId),
                     it.writerName,
                     it.writerId
@@ -93,13 +95,17 @@ class CommunityService(
         community.delete()
     }
 
-    fun getBestCommunity(count: Int): List<CommunityRes> {
+    fun getBestCommunity(count: Int): List<CommunityListRes> {
         val member: Member = memberSessionHolder.current()
-        return likeCachedRepository.getAll().take(count) // sorted
-            .map {
+        return likeCachedRepository.getAll(count.toLong())
+            .mapNotNull {
                 val didLiked =
                     likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!)
-                queryCommunityRepository.findById(it.communityId, it.likeCount, didLiked) ?: throw CommunityNotFoundException()
+                queryCommunityRepository.findById(it.communityId, it.likeCount, didLiked)
+                    ?: likeCachedRepository.clear(it.communityId).let { null }
+            }
+            .map {
+                CommunityListRes(it, queryCommentRepository.findRecentComment(it.communityId))
             }
     }
 }
