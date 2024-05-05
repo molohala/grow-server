@@ -51,7 +51,6 @@ class CommunityController(
     }
 
     @GetMapping("/best")
-    fun bestCommunities(@RequestParam("count", required = false) count: Int = 5): ResponseData<List<CommunityRes>> {
-        return ResponseData.ok("인기글 조회 성공", communityService.getBestCommunity(count))
-    }
+    fun bestCommunities(@RequestParam("count", required = false) count: Int = 5) =
+        ResponseData.ok("인기글 조회 성공", communityService.getBestCommunity(count))
 }
