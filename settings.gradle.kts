@@ -1,6 +1,6 @@
-rootProject.name = "infinity-server"
+rootProject.name = "grow-server"
 
-include("infinity-api")
-include("infinity-common")
-include("infinity-core")
-include("infinity-infra")
+include("grow-api")
+include("grow-common")
+include("grow-core")
+include("grow-infra")

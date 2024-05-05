@@ -1,2 +1,2 @@
-# infinity-server
+# grow-server
 Grow Server
