@@ -3,11 +3,12 @@ package com.molohala.grow.infra.token
 
 import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
-import com.molohala.grow.common.exception.custom.InternalServerException
 import com.molohala.grow.core.member.application.service.MemberService
 import com.molohala.grow.core.member.domain.entity.Member
 import com.molohala.grow.infra.security.MemberDetails
 import io.jsonwebtoken.*
+import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
 import org.apache.logging.log4j.util.Strings
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -20,7 +21,7 @@ class TokenExtractor(
     private val memberService: MemberService,
     private val jwtProperties: JwtProperties
 ) {
-
+    fun signingKey() = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
     fun getAuthentication(accessToken: String): Authentication {
         val claims = extractClaims(accessToken)
@@ -34,7 +35,7 @@ class TokenExtractor(
      fun extractClaims(token: String): Claims {
         try {
             return Jwts.parserBuilder()
-                .setSigningKey(jwtProperties.secret)
+                .setSigningKey(signingKey())
                 .build()
                 .parseClaimsJws(token).body
         } catch (e: ExpiredJwtException) {
@@ -43,8 +44,6 @@ class TokenExtractor(
             throw CustomException(GlobalExceptionCode.INVALID_TOKEN)
         } catch (e: UnsupportedJwtException) {
             throw CustomException(GlobalExceptionCode.INVALID_TOKEN)
-        } catch (e: Exception) {
-            throw InternalServerException()
         }
     }
 

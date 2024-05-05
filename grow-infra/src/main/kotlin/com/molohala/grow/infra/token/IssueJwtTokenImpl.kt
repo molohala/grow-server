@@ -10,7 +10,6 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -46,6 +45,6 @@ class IssueJwtTokenImpl(
             .claim("Authorization", role)
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + if (type == JwtType.ACCESS_TOKEN) jwtProperties.accessExpire else jwtProperties.refreshExpire))
-            .signWith(Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray()), SignatureAlgorithm.HS512)
+            .signWith(tokenExtractor.signingKey(), SignatureAlgorithm.HS512)
             .compact()
 }
