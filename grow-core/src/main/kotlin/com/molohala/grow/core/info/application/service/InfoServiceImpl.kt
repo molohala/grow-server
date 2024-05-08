@@ -132,6 +132,7 @@ class InfoServiceImpl(
         socialAccountJpaRepository.save(SocialAccount(name, SocialType.SOLVED_AC, member.id))
     }
 
+    @Transactional(rollbackOn = [Exception::class])
     override fun editInfo(bio: String?, job: String?) {
         memberJpaRepository.save(
             memberSessionHolder.current().apply { updateInfo(bio ?: this.bio, MemberJob.parse(job) ?: this.job) }
