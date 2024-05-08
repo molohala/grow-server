@@ -25,8 +25,8 @@ class InfoController(
     fun getMyUserInfo() = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
 
     @PatchMapping("/me")
-    fun patchMyInfo(@RequestBody @Valid data: EditUserInfoReq): Response {
-        infoService.editBio(data.bio)
+    fun patchMyInfo(@RequestBody data: EditUserInfoReq): Response {
+        infoService.editInfo(data.bio, data.job)
         return Response.ok("내 정보 수정 완료")
     }
 

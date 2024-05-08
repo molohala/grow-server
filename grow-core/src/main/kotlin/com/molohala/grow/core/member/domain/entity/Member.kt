@@ -1,6 +1,7 @@
 package com.molohala.grow.core.member.domain.entity
 
 import com.molohala.grow.core.common.BaseIdAndTimeEntity
+import com.molohala.grow.core.member.domain.consts.MemberJob
 import com.molohala.grow.core.member.domain.consts.MemberRole
 import com.molohala.grow.core.member.domain.consts.MemberState
 import jakarta.persistence.Column
@@ -15,35 +16,42 @@ class Member(
     email: String,
     role: MemberRole,
     state: MemberState,
+    job: MemberJob = MemberJob.DEVELOPER,
     bio: String = "",
 ) : BaseIdAndTimeEntity(null, null) {
     @Column(nullable = false)
-    var name = name
+    var name: String = name
         private set
 
     @Column(nullable = false, unique = true)
-    var email = email
+    var email: String = email
         private set
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role = role
+    var role: MemberRole = role
         private set
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var state = state
+    var state: MemberState = state
         private set
 
-    @Column(nullable = true)
-    var bio = bio
+    @Column(nullable = false)
+    var bio: String = bio
+        private set
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var job: MemberJob = job
         private set
 
     fun updateEmail(email: String) {
         this.email = email
     }
 
-    fun updateBio(bio: String) {
-        this.bio = bio
+    fun updateInfo(bio: String?, job: MemberJob?) {
+        if (bio != null) this.bio = bio
+        if (job != null) this.job = job
     }
 }
