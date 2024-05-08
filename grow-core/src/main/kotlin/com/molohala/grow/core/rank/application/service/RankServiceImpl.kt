@@ -12,29 +12,29 @@ class RankServiceImpl(
 ) : RankService {
     @Transactional(rollbackOn = [Exception::class])
     override fun getGithubTotalRanking(): List<RankingRes> {
-        return getRankForKey("githubTotal")
+        return getRankForKey("github:total")
     }
 
     @Transactional(rollbackOn = [Exception::class])
     override fun getGithubWeekRanking(): List<RankingRes> {
-        return getRankForKey("githubWeek")
+        return getRankForKey("github:week")
     }
 
     @Transactional(rollbackOn = [Exception::class])
     override fun getGithubTodayRanking(): List<RankingRes> {
-        return getRankForKey("githubToday")
+        return getRankForKey("github:today")
     }
 
     override fun getSolvedAcTotalRanking(): List<RankingRes> {
-        return getRankForKey("solvedAcTotal")
+        return getRankForKey("solvedac:total")
     }
 
     override fun getSolvedAcWeekRanking(): List<RankingRes> {
-        return getRankForKey("solvedAcWeek")
+        return getRankForKey("solvedac:week")
     }
 
     override fun getSolvedAcTodayRanking(): List<RankingRes> {
-        return getRankForKey("solvedAcToday")
+        return getRankForKey("solvedac:today")
     }
 
     @Suppress("SameParameterValue")

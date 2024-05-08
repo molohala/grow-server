@@ -5,7 +5,7 @@ import com.molohala.grow.core.member.domain.entity.QMember.member
 import com.molohala.grow.core.member.domain.entity.SocialAccount
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.molohala.grow.core.member.domain.entity.QSocialAccount.socialAccount
-import com.molohala.grow.core.rank.domain.dto.RedisSocialAccount
+import com.molohala.grow.core.rank.domain.dto.SocialAccountDTO
 import com.querydsl.core.types.Projections
 import org.springframework.stereotype.Repository
 
@@ -21,11 +21,11 @@ class SocialAccountQueryDslRepository(
             .fetchOne()
     }
 
-    override fun getSocialAccountsWithMemberInfo(): List<RedisSocialAccount> {
+    override fun getSocialAccountsWithMemberInfo(): List<SocialAccountDTO> {
         return queryFactory
             .select(
                 Projections.constructor(
-                    RedisSocialAccount::class.java,
+                    SocialAccountDTO::class.java,
                     socialAccount.memberId,
                     member.name,
                     member.email,
@@ -38,11 +38,11 @@ class SocialAccountQueryDslRepository(
             .fetch()
     }
 
-    override fun getSocialAccountsWithMemberInfo(socialType: SocialType): List<RedisSocialAccount> {
+    override fun getSocialAccountsWithMemberInfo(socialType: SocialType): List<SocialAccountDTO> {
         return queryFactory
             .select(
                 Projections.constructor(
-                    RedisSocialAccount::class.java,
+                    SocialAccountDTO::class.java,
                     socialAccount.memberId,
                     member.name,
                     member.email,
