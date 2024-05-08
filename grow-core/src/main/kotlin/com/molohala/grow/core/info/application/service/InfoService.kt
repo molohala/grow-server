@@ -11,4 +11,5 @@ interface InfoService {
     fun getUserInfo(userId: Long): InfoRes
     fun submitGithubId(name: String)
     fun submitSolvedAcInfo(name: String)
+    fun editInfo(bio: String?, job: String?)
 }

@@ -33,7 +33,7 @@ class AuthServiceImpl(
                 if (member == null) {
                     member = save(userData)
                 } else {
-                    member.update(userData.email)
+                    member.updateEmail(userData.email)
                 }
                 issueJwtToken.issueToken(member.email, member.role)
             }

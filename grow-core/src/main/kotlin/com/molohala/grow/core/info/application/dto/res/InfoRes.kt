@@ -6,6 +6,8 @@ data class InfoRes(
     val id: Long,
     val email: String,
     val name: String,
+    val bio: String,
+    val job: String,
     val createdAt: LocalDateTime,
     val socialAccounts: List<SocialAccountRes>,
 )

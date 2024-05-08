@@ -10,6 +10,7 @@ import com.molohala.grow.core.info.application.dto.res.SocialAccountRes
 import com.molohala.grow.core.info.application.dto.res.SolvedAcInfoRes
 import com.molohala.grow.core.info.exception.InfoExceptionCode
 import com.molohala.grow.core.member.application.MemberSessionHolder
+import com.molohala.grow.core.member.domain.consts.MemberJob
 import com.molohala.grow.core.member.domain.consts.SocialType
 import com.molohala.grow.core.member.domain.entity.SocialAccount
 import com.molohala.grow.core.member.repository.MemberJpaRepository
@@ -67,6 +68,8 @@ class InfoServiceImpl(
             member.id,
             member.email,
             member.name,
+            member.bio,
+            member.job.display,
             member.createdAt,
             socials
         )
@@ -86,6 +89,8 @@ class InfoServiceImpl(
             member.id,
             member.email,
             member.name,
+            member.bio,
+            member.job.display,
             member.createdAt,
             socials
         )
@@ -125,5 +130,12 @@ class InfoServiceImpl(
         // TODO: Clear cache when ranking system created
 
         socialAccountJpaRepository.save(SocialAccount(name, SocialType.SOLVED_AC, member.id))
+    }
+
+    @Transactional(rollbackOn = [Exception::class])
+    override fun editInfo(bio: String?, job: String?) {
+        memberJpaRepository.save(
+            memberSessionHolder.current().apply { updateInfo(bio ?: this.bio, MemberJob.parse(job) ?: this.job) }
+        )
     }
 }

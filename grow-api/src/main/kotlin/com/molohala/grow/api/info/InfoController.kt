@@ -2,6 +2,7 @@ package com.molohala.grow.api.info
 
 import com.molohala.grow.api.response.Response
 import com.molohala.grow.api.response.ResponseData
+import com.molohala.grow.core.info.application.dto.req.EditUserInfoReq
 import com.molohala.grow.core.info.application.dto.req.NewSocialAccountReq
 import com.molohala.grow.core.info.application.service.InfoService
 import jakarta.validation.Valid
@@ -22,6 +23,12 @@ class InfoController(
 
     @GetMapping("/me")
     fun getMyUserInfo() = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
+
+    @PatchMapping("/me")
+    fun editMyInfo(@RequestBody data: EditUserInfoReq): Response {
+        infoService.editInfo(data.bio, data.job)
+        return Response.ok("내 정보 수정 완료")
+    }
 
     @GetMapping("/user/{id}")
     fun getOtherUserInfo(@PathVariable id: Long) = ResponseData.ok("유저 정보 조회 완료", infoService.getUserInfo(id))
