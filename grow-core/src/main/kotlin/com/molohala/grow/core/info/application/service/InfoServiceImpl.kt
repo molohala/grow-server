@@ -67,6 +67,7 @@ class InfoServiceImpl(
             member.id,
             member.email,
             member.name,
+            member.bio,
             member.createdAt,
             socials
         )
@@ -86,6 +87,7 @@ class InfoServiceImpl(
             member.id,
             member.email,
             member.name,
+            member.bio,
             member.createdAt,
             socials
         )
@@ -125,5 +127,11 @@ class InfoServiceImpl(
         // TODO: Clear cache when ranking system created
 
         socialAccountJpaRepository.save(SocialAccount(name, SocialType.SOLVED_AC, member.id))
+    }
+
+    override fun editBio(bio: String) {
+        memberJpaRepository.save(
+            memberSessionHolder.current().apply { updateBio(bio) }
+        )
     }
 }

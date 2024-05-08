@@ -4,6 +4,7 @@ import com.molohala.grow.common.exception.ErrorResponseEntity
 import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
@@ -19,6 +20,13 @@ class CustomExceptionHandler {
     @ExceptionHandler(CustomException::class)
     protected fun handleCustomException(e: CustomException): ResponseEntity<ErrorResponseEntity> {
         return ErrorResponseEntity.responseEntity(e.exceptionCode)
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    protected fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ResponseEntity<ErrorResponseEntity> {
+        return ErrorResponseEntity.responseEntity(
+            if (e.cause == null) GlobalExceptionCode.NO_BODY else GlobalExceptionCode.INVALID_BODY
+        )
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

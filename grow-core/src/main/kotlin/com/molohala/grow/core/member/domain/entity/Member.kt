@@ -15,6 +15,7 @@ class Member(
     email: String,
     role: MemberRole,
     state: MemberState,
+    bio: String = "",
 ) : BaseIdAndTimeEntity(null, null) {
     @Column(nullable = false)
     var name = name
@@ -34,7 +35,15 @@ class Member(
     var state = state
         private set
 
-    fun update(email: String) {
+    @Column(nullable = true)
+    var bio = bio
+        private set
+
+    fun updateEmail(email: String) {
         this.email = email
+    }
+
+    fun updateBio(bio: String) {
+        this.bio = bio
     }
 }

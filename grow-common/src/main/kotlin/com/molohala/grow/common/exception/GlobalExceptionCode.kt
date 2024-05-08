@@ -12,6 +12,8 @@ enum class GlobalExceptionCode(
     METHOD_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "잘못된 메서드"),
     MEDIA_TYPE_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "잘못된 미디어 타입"),
     MEDIA_TYPE_MISS_MATCHED(HttpStatus.BAD_REQUEST, "잘못된 미디어 값"),
+    NO_BODY(HttpStatus.BAD_REQUEST, "요청 바디가 없음"),
+    INVALID_BODY(HttpStatus.BAD_REQUEST, "잘못된 요청 바디"),
     PARAMETER_NOT_FOUND(HttpStatus.BAD_REQUEST, "잘못된 파라미터"),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "잘못된 파라미터"),
     INVALID_PERMISSION(HttpStatus.BAD_REQUEST, "유효하지 않은 권한"),
