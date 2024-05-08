@@ -23,7 +23,7 @@ class CommentService(
 ) {
 
     @Transactional(rollbackFor = [Exception::class])
-    fun save(commentReq: CommentReq){
+    fun save(commentReq: CommentReq) {
         val member: Member = memberSessionHolder.current()
         commentJpaRepository.save(
             Comment(
@@ -35,31 +35,28 @@ class CommentService(
         )
     }
 
-    fun get(communityId: Long)=
-        queryCommentRepository.findByCommunityId(communityId)?:
-        throw CommentNotFoundException()
+    fun get(communityId: Long) =
+        queryCommentRepository.findByCommunityId(communityId) ?: throw CommentNotFoundException()
 
     @Transactional(rollbackFor = [Exception::class])
-    fun delete(commentId: Long){
+    fun delete(commentId: Long) {
         val member: Member = memberSessionHolder.current()
-        val comment: Comment = commentJpaRepository.findByIdOrNull(commentId)?:
-        throw CommentNotFoundException()
+        val comment: Comment = commentJpaRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
         validateCommand(member, comment)
         comment.delete()
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun modify(commentModifyReq: CommentModifyReq){
+    fun modify(commentModifyReq: CommentModifyReq) {
         val member: Member = memberSessionHolder.current()
         val comment: Comment = commentJpaRepository
-            .findByIdOrNull(commentModifyReq.commentId)?:
-            throw CommentNotFoundException()
+            .findByIdOrNull(commentModifyReq.commentId) ?: throw CommentNotFoundException()
         validateCommand(member, comment)
         comment.modify(commentModifyReq.content)
     }
 
-    private fun validateCommand(member:Member, comment: Comment){
-        if(member.id!=comment.memberId){
+    private fun validateCommand(member: Member, comment: Comment) {
+        if (member.id != comment.memberId) {
             throw AccessDeniedException()
         }
     }

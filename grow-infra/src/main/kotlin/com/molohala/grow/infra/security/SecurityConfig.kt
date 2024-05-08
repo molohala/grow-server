@@ -24,7 +24,7 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain =
         http
             .httpBasic { it.disable() }
-            .cors {  }
+            .cors { }
             .csrf { it.disable() }
             .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(tokenExceptionFilter, TokenFilter::class.java)

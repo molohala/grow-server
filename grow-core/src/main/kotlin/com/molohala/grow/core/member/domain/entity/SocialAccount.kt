@@ -2,7 +2,10 @@ package com.molohala.grow.core.member.domain.entity
 
 import com.molohala.grow.core.common.BaseIdAndTimeEntity
 import com.molohala.grow.core.member.domain.consts.SocialType
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import java.time.LocalDateTime
 
 @Entity(name = "tbl_social_account")

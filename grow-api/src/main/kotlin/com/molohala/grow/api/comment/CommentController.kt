@@ -19,8 +19,8 @@ class CommentController(
     }
 
     @GetMapping
-    fun get(@RequestParam("communityId") communityId:Long) =
-        ResponseData.ok("댓글 조회 성공",commentService.get(communityId))
+    fun get(@RequestParam("communityId") communityId: Long) =
+        ResponseData.ok("댓글 조회 성공", commentService.get(communityId))
 
     @PatchMapping
     fun modify(@RequestBody req: CommentModifyReq): Response {

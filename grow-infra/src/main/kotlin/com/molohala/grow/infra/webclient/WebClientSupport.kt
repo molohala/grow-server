@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono
 @Suppress("unused")
 @Component
 class WebClientSupport(
-    private val webClient:WebClient
+    private val webClient: WebClient
 ) {
     private val log = LoggerFactory.getLogger(WebClientSupport::class.java)
 

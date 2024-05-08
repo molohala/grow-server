@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class DodamClient(
     private val dodamProperties: DodamProperties,
     private val webClientSupport: WebClientSupport
-): DodamMemberClient {
+) : DodamMemberClient {
 
     fun issueDodamToken(code: String): String? {
         return webClientSupport.post(

@@ -10,7 +10,7 @@ class Community(
     content: String,
     state: CommunityState,
     memberId: Long
-): BaseIdAndTimeEntity(null,null) {
+) : BaseIdAndTimeEntity(null, null) {
 
     @Column(nullable = false)
     var content = content
@@ -24,11 +24,11 @@ class Community(
     var memberId = memberId
         private set
 
-    fun delete(){
-        this.state=CommunityState.DELETED
+    fun delete() {
+        this.state = CommunityState.DELETED
     }
 
-    fun modify(content: String){
-        this.content=content
+    fun modify(content: String) {
+        this.content = content
     }
 }

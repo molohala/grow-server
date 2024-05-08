@@ -15,7 +15,7 @@ class Member(
     email: String,
     role: MemberRole,
     state: MemberState,
-):BaseIdAndTimeEntity(null,null) {
+) : BaseIdAndTimeEntity(null, null) {
     @Column(nullable = false)
     var name = name
         private set
@@ -34,7 +34,7 @@ class Member(
     var state = state
         private set
 
-    fun update(email: String){
+    fun update(email: String) {
         this.email = email
     }
 }

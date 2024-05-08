@@ -7,7 +7,10 @@ import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 object RedisUtils {
-    fun <K, V, S : RedisSerializer<*>> createTemplate(factory: RedisConnectionFactory, valueSerializer: S): RedisTemplate<K, V> {
+    fun <K, V, S : RedisSerializer<*>> createTemplate(
+        factory: RedisConnectionFactory,
+        valueSerializer: S
+    ): RedisTemplate<K, V> {
         val redisTemplate = RedisTemplate<K, V>()
         redisTemplate.connectionFactory = factory
         redisTemplate.keySerializer = StringRedisSerializer()

@@ -6,4 +6,4 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
-class AccessDeniedException: CustomException(GlobalExceptionCode.INVALID_ROLE)
+class AccessDeniedException : CustomException(GlobalExceptionCode.INVALID_ROLE)

@@ -2,11 +2,11 @@ package com.molohala.grow.core.member.repository
 
 import com.molohala.grow.core.member.domain.consts.SocialType
 import com.molohala.grow.core.member.domain.entity.QMember.member
-import com.molohala.grow.core.member.domain.entity.SocialAccount
-import com.querydsl.jpa.impl.JPAQueryFactory
 import com.molohala.grow.core.member.domain.entity.QSocialAccount.socialAccount
+import com.molohala.grow.core.member.domain.entity.SocialAccount
 import com.molohala.grow.core.rank.domain.dto.SocialAccountDTO
 import com.querydsl.core.types.Projections
+import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 
 @Repository

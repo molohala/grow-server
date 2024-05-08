@@ -32,7 +32,7 @@ class TokenExtractor(
         return UsernamePasswordAuthenticationToken(details, null, details.authorities)
     }
 
-     fun extractClaims(token: String): Claims {
+    fun extractClaims(token: String): Claims {
         try {
             return Jwts.parserBuilder()
                 .setSigningKey(signingKey())

@@ -11,7 +11,7 @@ class Comment(
     commentState: CommentState,
     memberId: Long,
     communityId: Long
-): BaseIdAndTimeEntity(null, null) {
+) : BaseIdAndTimeEntity(null, null) {
     @Column(nullable = false)
     var content = content
         private set
@@ -28,11 +28,11 @@ class Comment(
     var communityId = communityId
         private set
 
-    fun delete(){
+    fun delete() {
         commentState = CommentState.DELETED
     }
 
-    fun modify(content: String){
+    fun modify(content: String) {
         this.content = content
     }
 }

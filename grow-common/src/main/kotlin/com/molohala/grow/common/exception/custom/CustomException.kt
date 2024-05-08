@@ -7,4 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 open class CustomException(
     val exceptionCode: ExceptionCode
-): RuntimeException()
+) : RuntimeException()

@@ -22,31 +22,33 @@ class AuthServiceImpl(
     private val dodamMemberClient: DodamMemberClient,
     private val issueJwtToken: IssueJwtToken,
     private val memberJpaRepository: MemberJpaRepository
-): AuthService {
+) : AuthService {
 
     @Transactional(rollbackFor = [Exception::class])
     override suspend fun signIn(code: String): Token {
         val dodamUserData: DodamUserData? = dodamMemberClient.getMemberInfo(code)
         dodamUserData?.let { userData ->
             return withContext(Dispatchers.IO) {
-                var member : Member? = memberJpaRepository.findByEmail(userData.email)
-                if (member==null){
-                    member =  save(userData)
-                }else{
+                var member: Member? = memberJpaRepository.findByEmail(userData.email)
+                if (member == null) {
+                    member = save(userData)
+                } else {
                     member.update(userData.email)
                 }
                 issueJwtToken.issueToken(member.email, member.role)
             }
-        }?: throw InternalServerException()
+        } ?: throw InternalServerException()
     }
 
-    private fun save(userData: DodamUserData): Member{
-        return memberJpaRepository.save(Member(
+    private fun save(userData: DodamUserData): Member {
+        return memberJpaRepository.save(
+            Member(
                 name = userData.name,
                 email = userData.email,
                 role = MemberRole.MEMBER,
                 state = MemberState.ACTIVE
-        ))
+            )
+        )
     }
 
     override fun reissue(reissueTokenReq: ReissueTokenReq): ReissueTokenRes =
@@ -54,7 +56,7 @@ class AuthServiceImpl(
 
     override fun test(email: String): Token {
         println("엄")
-        val member:Member? = memberJpaRepository.findByEmail(email)
+        val member: Member? = memberJpaRepository.findByEmail(email)
         return issueJwtToken.issueToken(email, member!!.role)
     }
 

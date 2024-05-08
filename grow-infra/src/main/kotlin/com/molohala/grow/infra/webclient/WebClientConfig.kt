@@ -18,8 +18,13 @@ class WebClientConfig {
     private val factory = DefaultUriBuilderFactory()
     private val httpClient = HttpClient.create()
         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-        .secure { sslContextSpec -> sslContextSpec.sslContext(SslContextBuilder.forClient().trustManager(
-            InsecureTrustManagerFactory.INSTANCE)) }
+        .secure { sslContextSpec ->
+            sslContextSpec.sslContext(
+                SslContextBuilder.forClient().trustManager(
+                    InsecureTrustManagerFactory.INSTANCE
+                ).build()
+            )
+        }
 
     @Bean
     fun webClient(): WebClient {

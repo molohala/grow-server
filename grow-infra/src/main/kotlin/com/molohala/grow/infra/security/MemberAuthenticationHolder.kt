@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
 @Component
-class MemberAuthenticationHolder: MemberSessionHolder {
+class MemberAuthenticationHolder : MemberSessionHolder {
     override fun current(): Member {
         return (SecurityContextHolder.getContext().authentication.principal as MemberDetails).member!!
     }

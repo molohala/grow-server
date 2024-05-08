@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class CommunityQueryDslRepository(
     private val queryFactory: JPAQueryFactory
-): CommunityQueryRepository {
+) : CommunityQueryRepository {
     override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
         return queryFactory
             .select(
@@ -29,7 +29,7 @@ class CommunityQueryDslRepository(
             .fetch()
     }
 
-    override fun findById(id: Long, likeCnt:Long, isLike:Boolean): CommunityRes? {
+    override fun findById(id: Long, likeCnt: Long, isLike: Boolean): CommunityRes? {
         return queryFactory
             .select(communityProjection(likeCnt, isLike))
             .from(community)

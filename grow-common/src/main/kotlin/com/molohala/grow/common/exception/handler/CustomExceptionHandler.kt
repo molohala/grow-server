@@ -32,10 +32,10 @@ class CustomExceptionHandler {
             .status(e.statusCode)
             .body(
                 ErrorResponseEntity(
-                status = e.statusCode.value(),
-                code = GlobalExceptionCode.INVALID_PARAMETER.name,
-                message = message.substring(0, message.length - 2)
-            )
+                    status = e.statusCode.value(),
+                    code = GlobalExceptionCode.INVALID_PARAMETER.name,
+                    message = message.substring(0, message.length - 2)
+                )
             )
     }
 
@@ -45,10 +45,10 @@ class CustomExceptionHandler {
             .status(400)
             .body(
                 ErrorResponseEntity(
-                status = GlobalExceptionCode.PARAMETER_NOT_FOUND.getHttpStatus().value(),
-                code = GlobalExceptionCode.PARAMETER_NOT_FOUND.name,
-                message = GlobalExceptionCode.PARAMETER_NOT_FOUND.getMessage()
-            )
+                    status = GlobalExceptionCode.PARAMETER_NOT_FOUND.getHttpStatus().value(),
+                    code = GlobalExceptionCode.PARAMETER_NOT_FOUND.name,
+                    message = GlobalExceptionCode.PARAMETER_NOT_FOUND.getMessage()
+                )
             )
     }
 
@@ -71,10 +71,10 @@ class CustomExceptionHandler {
             .status(400)
             .body(
                 ErrorResponseEntity(
-                status = GlobalExceptionCode.METHOD_NOT_SUPPORTED.getHttpStatus().value(),
-                code = GlobalExceptionCode.METHOD_NOT_SUPPORTED.name,
-                message = GlobalExceptionCode.METHOD_NOT_SUPPORTED.getMessage()
-            )
+                    status = GlobalExceptionCode.METHOD_NOT_SUPPORTED.getHttpStatus().value(),
+                    code = GlobalExceptionCode.METHOD_NOT_SUPPORTED.name,
+                    message = GlobalExceptionCode.METHOD_NOT_SUPPORTED.getMessage()
+                )
             )
     }
 
@@ -84,10 +84,10 @@ class CustomExceptionHandler {
             .status(400)
             .body(
                 ErrorResponseEntity(
-                status = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.getHttpStatus().value(),
-                code = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.name,
-                message = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.getMessage()
-            )
+                    status = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.getHttpStatus().value(),
+                    code = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.name,
+                    message = GlobalExceptionCode.MEDIA_TYPE_NOT_SUPPORTED.getMessage()
+                )
             )
     }
 
@@ -97,10 +97,10 @@ class CustomExceptionHandler {
             .status(400)
             .body(
                 ErrorResponseEntity(
-                status = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.getHttpStatus().value(),
-                code = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.name,
-                message = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.getMessage()
-            )
+                    status = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.getHttpStatus().value(),
+                    code = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.name,
+                    message = GlobalExceptionCode.MEDIA_TYPE_MISS_MATCHED.getMessage()
+                )
             )
     }
 

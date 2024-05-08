@@ -6,4 +6,4 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class CommunityNotFoundException: CustomException(GlobalExceptionCode.RESOURCE_NOT_FOUND)
+class CommunityNotFoundException : CustomException(GlobalExceptionCode.RESOURCE_NOT_FOUND)

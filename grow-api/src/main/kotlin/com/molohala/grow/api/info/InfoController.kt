@@ -13,20 +13,18 @@ class InfoController(
     private val infoService: InfoService
 ) {
     @GetMapping("/github")
-    fun githubInfo(@RequestParam("name") name: String)
-        = ResponseData.ok("깃허브 프로필 조회 완료", infoService.getGithubInfo(name))
+    fun githubInfo(@RequestParam("name") name: String) =
+        ResponseData.ok("깃허브 프로필 조회 완료", infoService.getGithubInfo(name))
 
     @GetMapping("/solvedac")
-    fun solvedAcInfo(@RequestParam("name") name: String)
-        = ResponseData.ok("솔브드 프로필 조회 완료", infoService.getSolvedAcInfo(name))
+    fun solvedAcInfo(@RequestParam("name") name: String) =
+        ResponseData.ok("솔브드 프로필 조회 완료", infoService.getSolvedAcInfo(name))
 
     @GetMapping("/me")
-    fun getMyUserInfo()
-            = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
+    fun getMyUserInfo() = ResponseData.ok("내 정보 조회 완료", infoService.getMyInfo())
 
     @GetMapping("/user/{id}")
-    fun getOtherUserInfo(@PathVariable id: Long)
-            = ResponseData.ok("유저 정보 조회 완료", infoService.getUserInfo(id))
+    fun getOtherUserInfo(@PathVariable id: Long) = ResponseData.ok("유저 정보 조회 완료", infoService.getUserInfo(id))
 
     @PostMapping("/github")
     fun uploadGithubInfo(@RequestBody @Valid data: NewSocialAccountReq): Response {

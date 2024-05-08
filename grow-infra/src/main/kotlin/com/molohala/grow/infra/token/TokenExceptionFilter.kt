@@ -13,11 +13,15 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class TokenExceptionFilter(private val errorResponseSender: ErrorResponseSender) : OncePerRequestFilter() {
 
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         try {
             filterChain.doFilter(request, response)
         } catch (e: CustomException) {
-          errorResponseSender.send(response, e.exceptionCode)
+            errorResponseSender.send(response, e.exceptionCode)
         } catch (e: WebClientException) {
             errorResponseSender.send(response, e.exceptionCode)
         } catch (e: Exception) {

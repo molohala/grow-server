@@ -25,7 +25,7 @@ class CommunityController(
     @GetMapping
     fun getList(
         @ModelAttribute pageRequest: PageRequest
-    ) = ResponseData.ok("커뮤티니 조회 성공",communityService.getList(pageRequest))
+    ) = ResponseData.ok("커뮤티니 조회 성공", communityService.getList(pageRequest))
 
     @GetMapping("/{id}")
     fun getById(
