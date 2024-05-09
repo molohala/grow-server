@@ -15,7 +15,11 @@ class LanguageController(
     fun getAll() = ResponseData.ok("언어 리스트 조회 완료", languageService.getAvailableLanguage())
 
     @GetMapping("/me")
-    fun languages() = ResponseData.ok("사용하는 언어 조회 완료", languageService.getUsingLanguages())
+    fun languages() = ResponseData.ok("사용하는 언어 조회 완료", languageService.getUsingLanguagesByMe())
+
+    @GetMapping("/{id}")
+    fun otherUserLang(@PathVariable id: Long) =
+        ResponseData.ok("사용하는 언어 조회 완료", languageService.getUsingLanguagesByOther(id))
 
     @PatchMapping("/me")
     fun editLanguage(@RequestBody data: EditLanguageReq): Response {

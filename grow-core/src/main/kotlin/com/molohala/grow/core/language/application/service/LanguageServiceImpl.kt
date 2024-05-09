@@ -43,9 +43,13 @@ class LanguageServiceImpl(
         )
     }
 
-    override fun getUsingLanguages(): List<Language> {
+    override fun getUsingLanguagesByMe(): List<Language> {
         val member = memberSessionHolder.current()
         return memberLanguageQueryRepository.getLanguagesByMemberId(member.id!!)
+    }
+
+    override fun getUsingLanguagesByOther(user: Long): List<Language> {
+        return memberLanguageQueryRepository.getLanguagesByMemberId(user)
     }
 
     override fun getAvailableLanguage(): List<Language> = languageJpaRepository.findAll()
