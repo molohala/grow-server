@@ -5,6 +5,7 @@ import com.molohala.grow.api.response.ResponseData
 import com.molohala.grow.core.info.application.dto.req.EditUserInfoReq
 import com.molohala.grow.core.info.application.dto.req.NewSocialAccountReq
 import com.molohala.grow.core.info.application.service.InfoService
+import com.molohala.grow.core.member.domain.consts.MemberJob
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 
@@ -29,6 +30,9 @@ class InfoController(
         infoService.editInfo(data.bio, data.job)
         return Response.ok("내 정보 수정 완료")
     }
+
+    @GetMapping("/jobs")
+    fun jobs() = ResponseData.ok("직업 정보 불러오기 완료", MemberJob.entries.map { it.display })
 
     @GetMapping("/user/{id}")
     fun getOtherUserInfo(@PathVariable id: Long) = ResponseData.ok("유저 정보 조회 완료", infoService.getUserInfo(id))
