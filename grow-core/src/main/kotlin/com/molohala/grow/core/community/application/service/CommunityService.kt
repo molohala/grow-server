@@ -46,6 +46,7 @@ class CommunityService(
     }
 
     fun getList(page: PageRequest): List<CommunityListRes> {
+        val member = memberSessionHolder.current()
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
         return queryCommunityRepository.findWithPagination(page).map {
             val likedCount = likeQueryRepository.getCntByCommunityId(it.communityId)
@@ -56,7 +57,7 @@ class CommunityService(
                     it.content,
                     it.createdAt,
                     likedCount,
-                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, it.writerId),
+                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!),
                     it.writerName,
                     it.writerId
                 ), queryCommentRepository.findRecentComment(it.communityId)
