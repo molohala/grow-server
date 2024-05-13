@@ -8,4 +8,5 @@ interface AuthService {
     suspend fun signIn(code: String): Token
     fun reissue(reissueTokenReq: ReissueTokenReq): ReissueTokenRes
     fun test(email: String): Token
+    fun revokeAccount()
 }

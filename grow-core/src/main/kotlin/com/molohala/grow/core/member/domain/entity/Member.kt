@@ -54,4 +54,9 @@ class Member(
         if (bio != null) this.bio = bio
         if (job != null) this.job = job
     }
+
+    fun markDelete(): Member {
+        state = MemberState.DELETED
+        return this
+    }
 }

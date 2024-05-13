@@ -21,6 +21,11 @@ class AuthController(
         @RequestBody @Valid reissueTokenReq: ReissueTokenReq
     ) = ResponseData.ok("토큰 재발급 성공", authService.reissue(reissueTokenReq))
 
+    @DeleteMapping
+    fun revoke() {
+        authService.revokeAccount()
+    }
+
     @PostMapping("/test")
     fun test(@RequestParam("email") email: String) =
         ResponseData.ok("테스트 로그인 성공", authService.test(email))

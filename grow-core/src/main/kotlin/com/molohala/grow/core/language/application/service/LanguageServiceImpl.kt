@@ -1,6 +1,8 @@
 package com.molohala.grow.core.language.application.service
 
+import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
+import com.molohala.grow.core.info.exception.InfoExceptionCode
 import com.molohala.grow.core.language.domain.entity.Language
 import com.molohala.grow.core.language.domain.entity.MemberAndLanguage
 import com.molohala.grow.core.language.exception.LanguageExceptionCode
@@ -8,12 +10,15 @@ import com.molohala.grow.core.language.repository.LanguageJpaRepository
 import com.molohala.grow.core.language.repository.MemberLanguageJpaRepository
 import com.molohala.grow.core.language.repository.MemberLanguageQueryRepository
 import com.molohala.grow.core.member.application.MemberSessionHolder
+import com.molohala.grow.core.member.domain.consts.MemberState
+import com.molohala.grow.core.member.repository.MemberJpaRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
 class LanguageServiceImpl(
     private val memberSessionHolder: MemberSessionHolder,
+    private val memberJpaRepository: MemberJpaRepository,
     private val languageJpaRepository: LanguageJpaRepository,
     private val memberLanguageJpaRepository: MemberLanguageJpaRepository,
     private val memberLanguageQueryRepository: MemberLanguageQueryRepository
@@ -49,6 +54,8 @@ class LanguageServiceImpl(
     }
 
     override fun getUsingLanguagesByOther(user: Long): List<Language> {
+        val member = memberJpaRepository.findById(user).orElseThrow { CustomException(InfoExceptionCode.USER_NOT_FOUND) }
+        if (member.state == MemberState.DELETED) throw CustomException(GlobalExceptionCode.USER_IS_DELETED)
         return memberLanguageQueryRepository.getLanguagesByMemberId(user)
     }
 

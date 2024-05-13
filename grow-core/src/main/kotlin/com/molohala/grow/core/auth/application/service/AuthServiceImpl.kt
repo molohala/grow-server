@@ -1,5 +1,7 @@
 package com.molohala.grow.core.auth.application.service
 
+import com.molohala.grow.common.exception.GlobalExceptionCode
+import com.molohala.grow.common.exception.custom.CustomException
 import com.molohala.grow.common.exception.custom.InternalServerException
 import com.molohala.grow.core.auth.DodamMemberClient
 import com.molohala.grow.core.auth.IssueJwtToken
@@ -7,6 +9,7 @@ import com.molohala.grow.core.auth.application.dto.DodamUserData
 import com.molohala.grow.core.auth.application.dto.Token
 import com.molohala.grow.core.auth.application.dto.req.ReissueTokenReq
 import com.molohala.grow.core.auth.application.dto.res.ReissueTokenRes
+import com.molohala.grow.core.member.application.MemberSessionHolder
 import com.molohala.grow.core.member.domain.consts.MemberRole
 import com.molohala.grow.core.member.domain.consts.MemberState
 import com.molohala.grow.core.member.domain.entity.Member
@@ -21,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional
 class AuthServiceImpl(
     private val dodamMemberClient: DodamMemberClient,
     private val issueJwtToken: IssueJwtToken,
-    private val memberJpaRepository: MemberJpaRepository
+    private val memberJpaRepository: MemberJpaRepository,
+    private val memberSessionHolder: MemberSessionHolder
 ) : AuthService {
 
     @Transactional(rollbackFor = [Exception::class])
@@ -29,12 +33,8 @@ class AuthServiceImpl(
         val dodamUserData: DodamUserData? = dodamMemberClient.getMemberInfo(code)
         dodamUserData?.let { userData ->
             return withContext(Dispatchers.IO) {
-                var member: Member? = memberJpaRepository.findByEmail(userData.email)
-                if (member == null) {
-                    member = save(userData)
-                } else {
-                    member.updateEmail(userData.email)
-                }
+                val member = memberJpaRepository.findByEmail(userData.email) ?: save(userData)
+                if (member.state == MemberState.DELETED) throw CustomException(GlobalExceptionCode.USER_IS_DELETED)
                 issueJwtToken.issueToken(member.email, member.role)
             }
         } ?: throw InternalServerException()
@@ -58,6 +58,11 @@ class AuthServiceImpl(
         println("엄")
         val member: Member? = memberJpaRepository.findByEmail(email)
         return issueJwtToken.issueToken(email, member!!.role)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    override fun revokeAccount() {
+        memberJpaRepository.save(memberSessionHolder.current().markDelete())
     }
 
 }

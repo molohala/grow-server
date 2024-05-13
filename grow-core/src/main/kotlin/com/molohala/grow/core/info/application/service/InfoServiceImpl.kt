@@ -1,5 +1,6 @@
 package com.molohala.grow.core.info.application.service
 
+import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
 import com.molohala.grow.core.info.GithubInfoClient
 import com.molohala.grow.core.info.SolvedAcInfoClient
@@ -11,6 +12,7 @@ import com.molohala.grow.core.info.application.dto.res.SolvedAcInfoRes
 import com.molohala.grow.core.info.exception.InfoExceptionCode
 import com.molohala.grow.core.member.application.MemberSessionHolder
 import com.molohala.grow.core.member.domain.consts.MemberJob
+import com.molohala.grow.core.member.domain.consts.MemberState
 import com.molohala.grow.core.member.domain.consts.SocialType
 import com.molohala.grow.core.member.domain.entity.SocialAccount
 import com.molohala.grow.core.member.repository.MemberJpaRepository
@@ -78,6 +80,7 @@ class InfoServiceImpl(
     override fun getUserInfo(userId: Long): InfoRes {
         val member = memberJpaRepository.findById(userId)
             .orElseThrow { CustomException(InfoExceptionCode.USER_NOT_FOUND) }
+        if (member.state == MemberState.DELETED) throw CustomException(GlobalExceptionCode.USER_IS_DELETED)
         val socials = socialAccountJpaRepository.findSocialAccountsByMemberId(member.id!!) // id won't be null
             .map {
                 SocialAccountRes(

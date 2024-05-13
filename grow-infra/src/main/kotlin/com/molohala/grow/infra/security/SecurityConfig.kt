@@ -30,7 +30,7 @@ class SecurityConfig(
             .addFilterBefore(tokenExceptionFilter, TokenFilter::class.java)
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("auth/**").permitAll()
+                    .requestMatchers("/auth/sign-in", "/auth/reissue").permitAll()
                     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                     .anyRequest().authenticated()
             }

@@ -3,9 +3,7 @@ package com.molohala.grow.infra.token
 
 import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
-import com.molohala.grow.core.member.application.service.MemberService
-import com.molohala.grow.core.member.domain.entity.Member
-import com.molohala.grow.infra.security.MemberDetails
+import com.molohala.grow.infra.security.MemberDetailsService
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -18,16 +16,14 @@ import java.util.*
 
 @Component
 class TokenExtractor(
-    private val memberService: MemberService,
+    private val memberDetailsService: MemberDetailsService,
     private val jwtProperties: JwtProperties
 ) {
     fun signingKey() = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
     fun getAuthentication(accessToken: String): Authentication {
         val claims = extractClaims(accessToken)
-        val member: Member? = memberService.getByEmail(claims.subject.toString())
-
-        val details = MemberDetails(member)
+        val details = memberDetailsService.loadUserByUsername(claims.subject.toString())
 
         return UsernamePasswordAuthenticationToken(details, null, details.authorities)
     }
