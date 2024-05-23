@@ -3,17 +3,29 @@ package com.molohala.grow.core.report.domain.entity
 import com.molohala.grow.core.common.BaseIdAndTimeEntity
 import com.molohala.grow.core.report.domain.consts.ReportState
 import com.molohala.grow.core.report.domain.consts.ReportType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 
+@Suppress("unused")
 @Entity
 class Report(
+    @Column(nullable = false)
     val reportedId: Long,
+
+    @Column(nullable = false)
     val reason: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     val reportType: ReportType,
     state: ReportState
 ) : BaseIdAndTimeEntity(null, null) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var state = state
-    private set
+        private set
 
     fun updateState(state: ReportState) {
         this.state = state
