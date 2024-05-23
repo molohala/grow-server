@@ -7,12 +7,16 @@ import com.molohala.grow.core.community.application.dto.req.CommunityModifyReq
 import com.molohala.grow.core.community.application.dto.req.CommunitySaveReq
 import com.molohala.grow.core.community.application.dto.res.CommunityRes
 import com.molohala.grow.core.community.application.service.CommunityService
+import com.molohala.grow.core.report.application.dto.req.ReportReasonReq
+import com.molohala.grow.core.report.application.service.ReportService
+import com.molohala.grow.core.report.domain.consts.ReportType
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/community")
 class CommunityController(
-    private val communityService: CommunityService
+    private val communityService: CommunityService,
+    private val reportService: ReportService
 ) {
     @PostMapping
     fun save(
@@ -48,6 +52,12 @@ class CommunityController(
     ): Response {
         communityService.delete(id)
         return Response.ok("커뮤니티 삭제 성공")
+    }
+
+    @PostMapping("/{id}/report")
+    fun report(@PathVariable id: Long, req: ReportReasonReq): Response {
+        reportService.report(id, req.reason, ReportType.COMMUNITY)
+        return Response.ok("댓글 신고 성공")
     }
 
     @GetMapping("/best")
