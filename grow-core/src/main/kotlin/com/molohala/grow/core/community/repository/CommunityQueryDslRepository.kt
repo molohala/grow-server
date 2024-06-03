@@ -5,8 +5,6 @@ import com.molohala.grow.core.community.application.dto.res.CommunityRes
 import com.molohala.grow.core.community.domain.consts.CommunityState
 import com.molohala.grow.core.community.domain.entity.QCommunity.community
 import com.molohala.grow.core.member.domain.entity.QMember.member
-import com.molohala.grow.core.report.domain.consts.ReportState
-import com.molohala.grow.core.report.domain.entity.QReport.report
 import com.querydsl.core.types.ConstructorExpression
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
@@ -19,12 +17,9 @@ class CommunityQueryDslRepository(
 ) : CommunityQueryRepository {
     override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
         return queryFactory
-            .select(
-                communityProjection(0, false)
-            )
+            .select(communityProjection(0, false))
             .from(community)
-            .innerJoin(report).on(community.id.eq(report.reportedId))
-            .where(community.state.ne(CommunityState.DELETED).and(report.state.ne(ReportState.ACCEPTED)))
+            .where(community.state.eq(CommunityState.ACTIVE))
             .orderBy(community.createdAt.desc())
             .innerJoin(member).on(community.memberId.eq(member.id))
             .offset((pageRequest.page - 1) * pageRequest.size)
@@ -37,8 +32,7 @@ class CommunityQueryDslRepository(
             .select(communityProjection(likeCnt, isLike))
             .from(community)
             .innerJoin(member).on(community.memberId.eq(member.id))
-            .innerJoin(report).on(community.id.eq(report.reportedId))
-            .where(community.id.eq(id).and(community.state.ne(CommunityState.DELETED)).and(report.state.ne(ReportState.ACCEPTED)))
+            .where(community.id.eq(id).and(community.state.eq(CommunityState.ACTIVE)))
             .fetchFirst()
     }
 
