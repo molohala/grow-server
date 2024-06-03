@@ -28,6 +28,10 @@ class Community(
         this.state = CommunityState.DELETED
     }
 
+    fun markReported() {
+        this.state = CommunityState.REPORTED
+    }
+
     fun modify(content: String) {
         this.content = content
     }

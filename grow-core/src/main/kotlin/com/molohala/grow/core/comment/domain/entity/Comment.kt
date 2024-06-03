@@ -35,4 +35,8 @@ class Comment(
     fun modify(content: String) {
         this.content = content
     }
+
+    fun markReported() {
+        commentState = CommentState.REPORTED
+    }
 }

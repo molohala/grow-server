@@ -10,7 +10,7 @@ import jakarta.persistence.Enumerated
 
 @Suppress("unused")
 @Entity
-class Report(
+data class Report(
     @Column(nullable = false)
     val reportedId: Long,
 
@@ -20,14 +20,8 @@ class Report(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val reportType: ReportType,
-    state: ReportState
-) : BaseIdAndTimeEntity(null, null) {
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var state = state
-        private set
-
-    fun updateState(state: ReportState) {
-        this.state = state
-    }
-}
+    val state: ReportState
+) : BaseIdAndTimeEntity(null, null)
