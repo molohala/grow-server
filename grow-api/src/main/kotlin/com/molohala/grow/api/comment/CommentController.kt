@@ -5,12 +5,16 @@ import com.molohala.grow.api.response.ResponseData
 import com.molohala.grow.core.comment.application.dto.req.CommentModifyReq
 import com.molohala.grow.core.comment.application.dto.req.CommentReq
 import com.molohala.grow.core.comment.application.service.CommentService
+import com.molohala.grow.core.report.application.dto.req.ReportReasonReq
+import com.molohala.grow.core.report.application.service.ReportService
+import com.molohala.grow.core.report.domain.consts.ReportType
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/comment")
 class CommentController(
-    private val commentService: CommentService
+    private val commentService: CommentService,
+    private val reportService: ReportService
 ) {
     @PostMapping
     fun save(@RequestBody req: CommentReq): Response {
@@ -32,5 +36,11 @@ class CommentController(
     fun delete(@PathVariable id: Long): Response {
         commentService.delete(id)
         return Response.ok("댓글 삭제 성공")
+    }
+
+    @PostMapping("/{id}/report")
+    fun report(@PathVariable id: Long, req: ReportReasonReq): Response {
+        reportService.report(id, req.reason, ReportType.COMMENT)
+        return Response.ok("댓글 신고 성공")
     }
 }

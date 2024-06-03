@@ -17,11 +17,9 @@ class CommunityQueryDslRepository(
 ) : CommunityQueryRepository {
     override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
         return queryFactory
-            .select(
-                communityProjection(0, false)
-            )
+            .select(communityProjection(0, false))
             .from(community)
-            .where(community.state.ne(CommunityState.DELETED))
+            .where(community.state.eq(CommunityState.ACTIVE))
             .orderBy(community.createdAt.desc())
             .innerJoin(member).on(community.memberId.eq(member.id))
             .offset((pageRequest.page - 1) * pageRequest.size)
@@ -34,7 +32,7 @@ class CommunityQueryDslRepository(
             .select(communityProjection(likeCnt, isLike))
             .from(community)
             .innerJoin(member).on(community.memberId.eq(member.id))
-            .where(community.id.eq(id).and(community.state.ne(CommunityState.DELETED)))
+            .where(community.id.eq(id).and(community.state.eq(CommunityState.ACTIVE)))
             .fetchFirst()
     }
 
