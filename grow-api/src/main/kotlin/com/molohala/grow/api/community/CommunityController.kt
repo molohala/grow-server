@@ -55,7 +55,7 @@ class CommunityController(
     }
 
     @PostMapping("/{id}/report")
-    fun report(@PathVariable id: Long, req: ReportReasonReq): Response {
+    fun report(@PathVariable id: Long, @RequestBody req: ReportReasonReq): Response {
         reportService.report(id, req.reason, ReportType.COMMUNITY)
         return Response.ok("댓글 신고 성공")
     }
