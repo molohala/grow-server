@@ -1,5 +1,6 @@
 package com.molohala.grow.core.comment.repository
 
+import com.molohala.grow.core.block.domain.entity.QBlock.block
 import com.molohala.grow.core.comment.application.dto.res.CommentRes
 import com.molohala.grow.core.comment.domain.consts.CommentState
 import com.molohala.grow.core.comment.domain.entity.QComment.comment
@@ -13,26 +14,27 @@ import org.springframework.stereotype.Repository
 class QueryDslCommentRepository(
     private val queryFactory: JPAQueryFactory
 ) : QueryCommentRepository {
-    override fun findByCommunityId(communityId: Long): List<CommentRes>? {
+    override fun findByCommunityId(communityId: Long, userId: Long): List<CommentRes>? {
         return queryFactory.select(commentProjection())
             .from(comment)
             .where(comment.communityId.eq(communityId).and(comment.commentState.eq(CommentState.ACTIVE)))
+            .innerJoin(member).on(comment.memberId.eq(member.id))
+            .leftJoin(block).on(block.blockedUserId.eq(comment.memberId).and(block.userId.eq(userId)))
+            .where(block.id.isNull) // 차단된 유저의 댓글은 block.id가 null이 아니므로 필터링됨
             .orderBy(comment.createdAt.desc())
-            .innerJoin(member)
-            .on(comment.memberId.eq(member.id))
             .fetch()
     }
 
-    override fun findRecentComment(communityId: Long): CommentRes? {
+    override fun findRecentComment(communityId: Long, userId: Long): CommentRes? {
         return queryFactory.select(commentProjection())
             .from(comment)
             .where(comment.communityId.eq(communityId).and(comment.commentState.eq(CommentState.ACTIVE)))
+            .innerJoin(member).on(comment.memberId.eq(member.id))
+            .leftJoin(block).on(block.blockedUserId.eq(comment.memberId).and(block.userId.eq(userId)))
+            .where(block.id.isNull)
             .orderBy(comment.createdAt.desc())
-            .innerJoin(member)
-            .on(comment.memberId.eq(member.id))
             .fetchFirst()
     }
-
 
     private fun commentProjection(): ConstructorExpression<CommentRes> {
         return Projections.constructor(

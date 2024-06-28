@@ -2,6 +2,7 @@ package com.molohala.grow.core.community.application.service
 
 import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
+import com.molohala.grow.core.block.repository.BlockRepository
 import com.molohala.grow.core.comment.repository.QueryCommentRepository
 import com.molohala.grow.core.common.PageRequest
 import com.molohala.grow.core.community.application.dto.req.CommunityModifyReq
@@ -30,7 +31,8 @@ class CommunityService(
     private val queryCommentRepository: QueryCommentRepository,
     private val likeCachedRepository: LikeCachedRepository,
     private val likeQueryRepository: LikeQueryRepository,
-    private val memberSessionHolder: MemberSessionHolder,
+    private val blockRepository: BlockRepository,
+    private val memberSessionHolder: MemberSessionHolder
 ) {
 
     @Transactional(rollbackFor = [Exception::class])
@@ -48,7 +50,7 @@ class CommunityService(
     fun getList(page: PageRequest): List<CommunityListRes> {
         val member = memberSessionHolder.current()
         if (page.page < 1) throw CustomException(GlobalExceptionCode.INVALID_PARAMETER)
-        return queryCommunityRepository.findWithPagination(page).map {
+        return queryCommunityRepository.findWithPagination(pageRequest = page, userId = member.id!!).map {
             val likedCount = likeQueryRepository.getCntByCommunityId(it.communityId)
             likeCachedRepository.cache(it.communityId, likedCount)
             CommunityListRes(
@@ -57,10 +59,10 @@ class CommunityService(
                     it.content,
                     it.createdAt,
                     likedCount,
-                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!),
+                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id),
                     it.writerName,
                     it.writerId
-                ), queryCommentRepository.findRecentComment(it.communityId)
+                ), queryCommentRepository.findRecentComment(it.communityId, userId = member.id)
             )
         }
     }
@@ -98,15 +100,29 @@ class CommunityService(
 
     fun getBestCommunity(count: Int): List<CommunityListRes> {
         val member: Member = memberSessionHolder.current()
-        return likeCachedRepository.getAll(count.toLong())
+        val blocks = blockRepository.findByUserId(userId = member.id!!)
+        return likeCachedRepository.getAll(-1)
             .mapNotNull {
                 val didLiked =
-                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!)
+                    likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id)
                 queryCommunityRepository.findById(it.communityId, it.likeCount, didLiked)
                     ?: likeCachedRepository.clear(it.communityId).let { null }
             }
+            .filter { community ->
+                blocks.firstOrNull { it.blockedUserId == community.writerId } == null
+            }
             .map {
-                CommunityListRes(it, queryCommentRepository.findRecentComment(it.communityId))
+                CommunityListRes(
+                    it,
+                    queryCommentRepository.findRecentComment(communityId = it.communityId, userId = member.id!!)
+                )
+            }
+            .let {
+                if (it.size >= count) {
+                    it.slice(0..<count)
+                } else {
+                    it
+                }
             }
     }
 }

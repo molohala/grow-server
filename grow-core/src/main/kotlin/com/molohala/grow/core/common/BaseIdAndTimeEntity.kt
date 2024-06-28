@@ -9,6 +9,6 @@ abstract class BaseIdAndTimeEntity(
         name = "id",
         nullable = false,
         updatable = false
-    ) val id: Long?,
-    createdAt: LocalDateTime?
+    ) val id: Long? = null,
+    createdAt: LocalDateTime? = null
 ) : BaseTimeEntity(createdAt)

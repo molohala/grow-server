@@ -24,8 +24,9 @@ class LikeRedisCachedRepository(
     override fun getAll(count: Long): List<LikeCount> {
         val zSet = likeRedisTemplate.opsForZSet()
 
-        return zSet.reverseRangeWithScores("community:likes", 0, count - 1)!!.map {
+        return zSet.reverseRangeWithScores("community:likes", 0, count)!!.map {
             LikeCount(it.value!!, it.score!!.toLong())
         }
+
     }
 }

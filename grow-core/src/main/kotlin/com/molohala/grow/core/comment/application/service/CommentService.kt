@@ -2,6 +2,7 @@ package com.molohala.grow.core.comment.application.service
 
 import com.molohala.grow.core.comment.application.dto.req.CommentModifyReq
 import com.molohala.grow.core.comment.application.dto.req.CommentReq
+import com.molohala.grow.core.comment.application.dto.res.CommentRes
 import com.molohala.grow.core.comment.domain.consts.CommentState
 import com.molohala.grow.core.comment.domain.entity.Comment
 import com.molohala.grow.core.comment.domain.exception.CommentNotFoundException
@@ -35,8 +36,13 @@ class CommentService(
         )
     }
 
-    fun get(communityId: Long) =
-        queryCommentRepository.findByCommunityId(communityId) ?: throw CommentNotFoundException()
+    fun get(communityId: Long): List<CommentRes> {
+        val member = memberSessionHolder.current()
+        return queryCommentRepository.findByCommunityId(
+            communityId = communityId,
+            userId = member.id!!
+        ) ?: throw CommentNotFoundException()
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun delete(commentId: Long) {

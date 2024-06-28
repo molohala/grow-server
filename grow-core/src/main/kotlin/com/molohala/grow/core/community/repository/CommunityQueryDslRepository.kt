@@ -1,5 +1,6 @@
 package com.molohala.grow.core.community.repository
 
+import com.molohala.grow.core.block.domain.entity.QBlock.block
 import com.molohala.grow.core.common.PageRequest
 import com.molohala.grow.core.community.application.dto.res.CommunityRes
 import com.molohala.grow.core.community.domain.consts.CommunityState
@@ -15,13 +16,15 @@ import org.springframework.stereotype.Repository
 class CommunityQueryDslRepository(
     private val queryFactory: JPAQueryFactory
 ) : CommunityQueryRepository {
-    override fun findWithPagination(pageRequest: PageRequest): List<CommunityRes> {
+    override fun findWithPagination(pageRequest: PageRequest, userId: Long): List<CommunityRes> {
         return queryFactory
             .select(communityProjection(0, false))
             .from(community)
             .where(community.state.eq(CommunityState.ACTIVE))
-            .orderBy(community.createdAt.desc())
+            .leftJoin(block).on(block.userId.eq(userId).and(community.memberId.eq(block.blockedUserId)))
+            .where(block.id.isNull)
             .innerJoin(member).on(community.memberId.eq(member.id))
+            .orderBy(community.createdAt.desc())
             .offset((pageRequest.page - 1) * pageRequest.size)
             .limit(pageRequest.size)
             .fetch()
