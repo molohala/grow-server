@@ -1,6 +1,6 @@
 package com.molohala.grow.core.rank.application.service
 
-import com.molohala.grow.core.block.domain.repository.BlockRepository
+import com.molohala.grow.core.block.repository.BlockRepository
 import com.molohala.grow.core.member.application.MemberSessionHolder
 import com.molohala.grow.core.rank.domain.dto.RedisSocialAccount
 import com.molohala.grow.core.rank.domain.dto.res.RankingRes
@@ -45,7 +45,7 @@ class RankServiceImpl(
     private fun getRankForKey(key: String): List<RankingRes> {
         val zSet = redisTemplate.opsForZSet()
         val member = memberSessionHolder.current()
-        val block = blockRepository.findByUserId(member.id!!)
+        val blocks = blockRepository.findByUserId(member.id!!)
 
         var rank = 0
         var keepCount = 0
@@ -64,7 +64,7 @@ class RankServiceImpl(
                 RankingRes(value.memberId, value.name, value.socialId, rank, score)
             }
             .filter { rank ->
-                block.firstOrNull { it.blockedUserId == rank.memberId } == null
+                blocks.firstOrNull { it.blockedUserId == rank.memberId } == null
             }
 
         return map

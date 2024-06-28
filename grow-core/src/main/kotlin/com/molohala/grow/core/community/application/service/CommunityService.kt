@@ -2,7 +2,7 @@ package com.molohala.grow.core.community.application.service
 
 import com.molohala.grow.common.exception.GlobalExceptionCode
 import com.molohala.grow.common.exception.custom.CustomException
-import com.molohala.grow.core.block.domain.repository.BlockRepository
+import com.molohala.grow.core.block.repository.BlockRepository
 import com.molohala.grow.core.comment.repository.QueryCommentRepository
 import com.molohala.grow.core.common.PageRequest
 import com.molohala.grow.core.community.application.dto.req.CommunityModifyReq

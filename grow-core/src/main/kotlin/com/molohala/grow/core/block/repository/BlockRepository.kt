@@ -1,4 +1,4 @@
-package com.molohala.grow.core.block.domain.repository
+package com.molohala.grow.core.block.repository
 
 import com.molohala.grow.core.block.domain.entity.Block
 import org.springframework.data.jpa.repository.JpaRepository

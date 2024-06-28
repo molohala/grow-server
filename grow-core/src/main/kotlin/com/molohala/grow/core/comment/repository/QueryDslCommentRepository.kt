@@ -36,7 +36,6 @@ class QueryDslCommentRepository(
             .fetchFirst()
     }
 
-
     private fun commentProjection(): ConstructorExpression<CommentRes> {
         return Projections.constructor(
             CommentRes::class.java,
