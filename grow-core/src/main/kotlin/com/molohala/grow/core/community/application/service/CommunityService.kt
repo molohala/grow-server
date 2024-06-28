@@ -60,7 +60,7 @@ class CommunityService(
                     likeQueryRepository.existsByCommunityIdAndMemberId(it.communityId, member.id!!),
                     it.writerName,
                     it.writerId
-                ), queryCommentRepository.findRecentComment(it.communityId)
+                ), queryCommentRepository.findRecentComment(it.communityId, userId = member.id)
             )
         }
     }
@@ -106,7 +106,7 @@ class CommunityService(
                     ?: likeCachedRepository.clear(it.communityId).let { null }
             }
             .map {
-                CommunityListRes(it, queryCommentRepository.findRecentComment(it.communityId))
+                CommunityListRes(it, queryCommentRepository.findRecentComment(communityId = it.communityId, userId = member.id!!))
             }
     }
 }
