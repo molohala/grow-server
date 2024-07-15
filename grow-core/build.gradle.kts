@@ -19,6 +19,9 @@ dependencies {
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
+    implementation("com.google.firebase:firebase-admin:9.3.0")
+    implementation("io.netty:netty-codec-http:4.1.111.Final") // fix CVE-2024-29025 Vulnerability
+
     implementation(project(":grow-common"))
 }
 
