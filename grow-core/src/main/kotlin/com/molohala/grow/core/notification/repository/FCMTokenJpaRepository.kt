@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FCMTokenJpaRepository : JpaRepository<FCMToken, Long> {
-    fun getFCMTokenByUserIdIs(userId: Long): FCMToken?
+    fun getFCMTokenByUserId(userId: Long): FCMToken?
+    fun getAllByFcmToken(fcmToken: String): List<FCMToken>
 }

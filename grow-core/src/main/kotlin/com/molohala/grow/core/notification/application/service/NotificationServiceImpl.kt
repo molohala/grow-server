@@ -21,6 +21,7 @@ class NotificationServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class])
     override fun subscribe(fcmToken: String) {
+        tokenJpaRepository.getAllByFcmToken(fcmToken).forEach { tokenJpaRepository.delete(it) }
         tokenJpaRepository.save(
             FCMToken(
                 fcmToken = fcmToken,
@@ -31,7 +32,7 @@ class NotificationServiceImpl(
     }
 
     override fun sendTo(title: String, body: String, userId: Long) {
-        val fcm = tokenJpaRepository.getFCMTokenByUserIdIs(userId)
+        val fcm = tokenJpaRepository.getFCMTokenByUserId(userId)
             ?: return
 
         val msg = Message.builder()
