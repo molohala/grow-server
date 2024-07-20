@@ -48,7 +48,7 @@ class RankServiceImpl(
     private fun getRankForKey(key: String): RankingTimedListRes {
         val zSet = redisTemplate.opsForZSet()
         val member = memberSessionHolder.current()
-        val blocks = blockRepository.findByUserId(member.id!!)
+        val blocks = blockRepository.findByUserId(member.id!!).associate { it.blockedUserId to Unit /* inspired by java's internal hash set implementation */ } //.map { it.blockedUserId }.toSet()
 
         val lastNano = 2L * 60L * 60L * 1_000L * 1_000_000L - redisTemplate.getExpire(key, TimeUnit.NANOSECONDS)
 
@@ -66,10 +66,7 @@ class RankServiceImpl(
                     keepCount++
                 }
                 prevScore = score
-                RankingRes(value.memberId, value.name, value.socialId, rank, score)
-            }
-            .filter { res ->
-                blocks.firstOrNull { it.blockedUserId == res.memberId } == null
+                RankingRes(value.memberId, value.name, value.socialId, rank, blocks.contains(value.memberId), score)
             }
 
         return RankingTimedListRes(LocalDateTime.now().minusNanos(lastNano), map)

@@ -5,5 +5,6 @@ data class RankingRes(
     val memberName: String,
     val socialId: String,
     val rank: Int,
+    val isBlockedUser: Boolean,
     val count: Long,
 )
