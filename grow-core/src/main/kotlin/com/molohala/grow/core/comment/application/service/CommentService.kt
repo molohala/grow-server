@@ -42,7 +42,7 @@ class CommentService(
 
         if (m.memberId == memberSessionHolder.current().id) return
 
-        fire.sendTo("댓글이 달렸습니다!", "\"${member.name}\"님이 \"${commentReq.content.strip(32)}\" 댓글을 달았습니다.", m.memberId)
+        fire.sendTo("댓글이 달렸습니다!", "${member.name}님이 \"${commentReq.content.strip(32)}\" 댓글을 달았습니다.", m.memberId)
     }
 
     private fun String.strip(len: Int) = if (length > len) substring(0, len - 3) + "..." else this
