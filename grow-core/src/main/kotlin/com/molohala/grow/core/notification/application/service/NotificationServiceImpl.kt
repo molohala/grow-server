@@ -28,7 +28,7 @@ class NotificationServiceImpl(
                 userId = sessionHolder.current().id!!
             )
         )
-        messaging.subscribeToTopic(listOf(fcmToken), "/all") // for broadcasting
+        messaging.subscribeToTopic(listOf(fcmToken), "/topics/all") // for broadcasting
     }
 
     override fun sendTo(title: String, body: String, userId: Long) {
