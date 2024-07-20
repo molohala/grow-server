@@ -8,9 +8,11 @@ import com.molohala.grow.core.comment.domain.entity.Comment
 import com.molohala.grow.core.comment.domain.exception.CommentNotFoundException
 import com.molohala.grow.core.comment.repository.CommentJpaRepository
 import com.molohala.grow.core.comment.repository.QueryCommentRepository
+import com.molohala.grow.core.community.repository.CommunityJpaRepository
 import com.molohala.grow.core.member.application.MemberSessionHolder
 import com.molohala.grow.core.member.domain.entity.Member
 import com.molohala.grow.core.member.domain.exception.AccessDeniedException
+import com.molohala.grow.core.notification.application.service.NotificationFire
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,10 +21,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class CommentService(
     private val commentJpaRepository: CommentJpaRepository,
+    private val communityJpaRepository: CommunityJpaRepository,
     private val queryCommentRepository: QueryCommentRepository,
-    private val memberSessionHolder: MemberSessionHolder
+    private val memberSessionHolder: MemberSessionHolder,
+    private val fire: NotificationFire
 ) {
-
     @Transactional(rollbackFor = [Exception::class])
     fun save(commentReq: CommentReq) {
         val member: Member = memberSessionHolder.current()
@@ -34,7 +37,15 @@ class CommentService(
                 commentReq.communityId
             )
         )
+
+        val m = communityJpaRepository.findById(commentReq.communityId).get() // no null
+
+        if (m.memberId == memberSessionHolder.current().id) return
+
+        fire.sendTo("댓글이 달렸습니다!", "${member.name}님이 \"${commentReq.content.strip(32)}\" 댓글을 달았습니다.", m.memberId)
     }
+
+    private fun String.strip(len: Int) = if (length > len) substring(0, len - 3) + "..." else this
 
     fun get(communityId: Long): List<CommentRes> {
         val member = memberSessionHolder.current()
