@@ -4,9 +4,12 @@ import com.molohala.grow.core.block.repository.BlockRepository
 import com.molohala.grow.core.member.application.MemberSessionHolder
 import com.molohala.grow.core.rank.domain.dto.RedisSocialAccount
 import com.molohala.grow.core.rank.domain.dto.res.RankingRes
+import com.molohala.grow.core.rank.domain.dto.res.RankingTimedListRes
 import jakarta.transaction.Transactional
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 @Service
 class RankServiceImpl(
@@ -15,37 +18,39 @@ class RankServiceImpl(
     private val memberSessionHolder: MemberSessionHolder
 ) : RankService {
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubTotalRanking(): List<RankingRes> {
+    override fun getGithubTotalRanking(): RankingTimedListRes {
         return getRankForKey("github:total")
     }
 
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubWeekRanking(): List<RankingRes> {
+    override fun getGithubWeekRanking(): RankingTimedListRes {
         return getRankForKey("github:week")
     }
 
     @Transactional(rollbackOn = [Exception::class])
-    override fun getGithubTodayRanking(): List<RankingRes> {
+    override fun getGithubTodayRanking(): RankingTimedListRes {
         return getRankForKey("github:today")
     }
 
-    override fun getSolvedAcTotalRanking(): List<RankingRes> {
+    override fun getSolvedAcTotalRanking(): RankingTimedListRes {
         return getRankForKey("solvedac:total")
     }
 
-    override fun getSolvedAcWeekRanking(): List<RankingRes> {
+    override fun getSolvedAcWeekRanking(): RankingTimedListRes {
         return getRankForKey("solvedac:week")
     }
 
-    override fun getSolvedAcTodayRanking(): List<RankingRes> {
+    override fun getSolvedAcTodayRanking(): RankingTimedListRes {
         return getRankForKey("solvedac:today")
     }
 
     @Suppress("SameParameterValue")
-    private fun getRankForKey(key: String): List<RankingRes> {
+    private fun getRankForKey(key: String): RankingTimedListRes {
         val zSet = redisTemplate.opsForZSet()
         val member = memberSessionHolder.current()
         val blocks = blockRepository.findByUserId(member.id!!)
+
+        val lastNano = 2L * 60L * 60L * 1_000L * 1_000_000L - redisTemplate.getExpire(key, TimeUnit.NANOSECONDS)
 
         var rank = 0
         var keepCount = 0
@@ -63,10 +68,10 @@ class RankServiceImpl(
                 prevScore = score
                 RankingRes(value.memberId, value.name, value.socialId, rank, score)
             }
-            .filter { rank ->
-                blocks.firstOrNull { it.blockedUserId == rank.memberId } == null
+            .filter { res ->
+                blocks.firstOrNull { it.blockedUserId == res.memberId } == null
             }
 
-        return map
+        return RankingTimedListRes(LocalDateTime.now().minusNanos(lastNano), map)
     }
 }

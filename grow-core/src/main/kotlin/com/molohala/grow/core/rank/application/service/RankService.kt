@@ -1,13 +1,13 @@
 package com.molohala.grow.core.rank.application.service
 
-import com.molohala.grow.core.rank.domain.dto.res.RankingRes
+import com.molohala.grow.core.rank.domain.dto.res.RankingTimedListRes
 
 interface RankService {
-    fun getGithubTotalRanking(): List<RankingRes>
-    fun getGithubWeekRanking(): List<RankingRes>
-    fun getGithubTodayRanking(): List<RankingRes>
+    fun getGithubTotalRanking(): RankingTimedListRes
+    fun getGithubWeekRanking(): RankingTimedListRes
+    fun getGithubTodayRanking(): RankingTimedListRes
 
-    fun getSolvedAcTotalRanking(): List<RankingRes>
-    fun getSolvedAcWeekRanking(): List<RankingRes>
-    fun getSolvedAcTodayRanking(): List<RankingRes>
+    fun getSolvedAcTotalRanking(): RankingTimedListRes
+    fun getSolvedAcWeekRanking(): RankingTimedListRes
+    fun getSolvedAcTodayRanking(): RankingTimedListRes
 }

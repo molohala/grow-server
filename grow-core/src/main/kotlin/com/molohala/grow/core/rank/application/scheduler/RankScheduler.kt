@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
@@ -59,17 +60,18 @@ class RankScheduler(
         val zSet = redisTemplate.opsForZSet()
         logger.info("got: {}", infos.size)
 
-        redisTemplate.delete(
-            listOf(
-                "github:week", "github:today", "github:total"
-            )
-        )
+        val keys = listOf("github:week", "github:today", "github:total")
+
+        redisTemplate.delete(keys)
 
         for ((userInfo, inf) in infos) {
             zSet.add("github:total", userInfo, inf.totalCommits.toDouble())
             zSet.add("github:week", userInfo, inf.weekCommits.sumOf { it.contributionCount }.toDouble())
             zSet.add("github:today", userInfo, inf.todayCommits.contributionCount.toDouble())
         }
+
+        /** @ref https://github.com/redis/redis/issues/1258 */
+        for (key in keys) redisTemplate.expire(key, Duration.ofHours(2)) // since our rank refresh rate is 1h, so duration is not important.
 
         logger.info("fin. {} {} {}", service.isTerminating, service.isShutdown, service.activeCount)
     }
@@ -110,11 +112,9 @@ class RankScheduler(
         val zSet = redisTemplate.opsForZSet()
         logger.info("got: {}", infos.size)
 
-        redisTemplate.delete(
-            listOf(
-                "solvedac:week", "solvedac:today", "solvedac:total"
-            )
-        )
+        val keys = listOf("solvedac:week", "solvedac:today", "solvedac:total")
+
+        redisTemplate.delete(keys)
 
         for ((userInfo, pair) in infos) {
             val (info, grass) = pair
@@ -132,6 +132,9 @@ class RankScheduler(
                 (grass.lastOrNull { it.date == LocalDate.now() }
                     ?: SolvedAcSolves(LocalDate.now())).solvedCount.toDouble())
         }
+
+        /** @ref https://github.com/redis/redis/issues/1258 */
+        for (key in keys) redisTemplate.expire(key, Duration.ofHours(2)) // since our rank refresh rate is 1h, so duration is not important.
 
         logger.info("fin. {} {} {}", service.isTerminating, service.isShutdown, service.activeCount)
     }
