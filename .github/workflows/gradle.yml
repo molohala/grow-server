@@ -25,7 +25,7 @@ jobs:
           echo "${{ secrets.APPLICATION }}" > ./grow-api/src/main/resources/application.yml
 
           touch ./grow-api/src/main/resources/grow-firebase.json
-          echo "${{ secrets.GROW_FIREBASE_JSON }}" > ./grow-api/src/main/resources/grow-firebase.json
+          echo "${{ secrets.GROW_FIREBASE_JSON }}" | base64 -d -i - > ./grow-api/src/main/resources/grow-firebase.json
 
       - name: Build with Gradle
         run: |
