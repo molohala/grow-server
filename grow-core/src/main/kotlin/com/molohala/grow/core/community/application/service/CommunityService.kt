@@ -22,6 +22,7 @@ import com.molohala.grow.core.member.domain.exception.AccessDeniedException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 @Transactional(readOnly = true)
@@ -109,13 +110,8 @@ class CommunityService(
                     ?: likeCachedRepository.clear(it.communityId).let { null }
             }
             .filter { community ->
-                blocks.firstOrNull { it.blockedUserId == community.writerId } == null
-            }
-            .map {
-                CommunityListRes(
-                    it,
-                    queryCommentRepository.findRecentComment(communityId = it.communityId, userId = member.id!!)
-                )
+                blocks.firstOrNull { it.blockedUserId == community.writerId } == null && // block filter
+                        community.createdAt.isAfter(LocalDateTime.now().minusDays(7)) // last week filter
             }
             .let {
                 if (it.size >= count) {
@@ -123,6 +119,12 @@ class CommunityService(
                 } else {
                     it
                 }
+            }
+            .map {
+                CommunityListRes(
+                    it,
+                    queryCommentRepository.findRecentComment(communityId = it.communityId, userId = member.id)
+                )
             }
     }
 }
