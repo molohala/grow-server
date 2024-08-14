@@ -53,19 +53,20 @@ class RankServiceImpl(
         val lastNano = 2L * 60L * 60L * 1_000L * 1_000_000L - redisTemplate.getExpire(key, TimeUnit.NANOSECONDS)
 
         var rank = 0
-        var keepCount = 0
-        var prevScore = -1L
+//        var keepCount = 0
+//        var prevScore = -1L
         val map = zSet.reverseRangeWithScores(key, 0, -1)!!
             .map {
                 val value = it.value!!
                 val score = it.score!!.toLong()
-                if (prevScore != score) {
-                    rank += 1 + keepCount
-                    keepCount = 0
-                } else {
-                    keepCount++
-                }
-                prevScore = score
+                rank++
+//                if (prevScore != score) { // 공동등수
+//                    rank += 1 + keepCount
+//                    keepCount = 0
+//                } else {
+//                    keepCount++
+//                }
+//                prevScore = score
                 RankingRes(value.memberId, value.name, value.socialId, rank, blocks.contains(value.memberId), score)
             }
 
