@@ -5,13 +5,12 @@ on:
     branches: ["develop"]
   pull_request:
     branches: ["develop"]
- 
+
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,26 +21,38 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: make application.yml
+      - name: Make build properties
         run: |
-          mkdir -p ./infinity-api/src/main/resources
-          touch ./infinity-api/src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION }}" > ./infinity-api/src/main/resources/application.yml
+          mkdir -p ./grow-api/src/main/resources
+          
+          touch ./grow-api/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION }}" > ./grow-api/src/main/resources/application.yml
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+          touch ./grow-api/src/main/resources/grow-firebase.json
+          echo "${{ secrets.GROW_FIREBASE_JSON }}" | base64 -d -i - > ./grow-api/src/main/resources/grow-firebase.json
 
       - name: Build with Gradle
-        run: ./gradlew :infinity-api:build -x test --parallel
+        run: |
+          chmod +x gradlew
+          ./gradlew :grow-api:build -x test --parallel
 
       - name: Docker build
+        if: github.ref == 'refs/heads/develop'
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ secrets.DOCKER_USERNAME }}/grow:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/grow:latest
 
+  publish:
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && github.ref == 'refs/heads/develop' }}
+    needs: [ build ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
       - name: Deploy with SSH
-        if: github.ref == 'refs/heads/develop'
         uses: appleboy/ssh-action@master
 
         with:
@@ -50,11 +61,13 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
           # 도커 작업
           script: |
-            sudo docker stop $(docker ps -a -q)
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
-            sudo docker image prune -a -f
+            sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            
+            sudo docker rm -f $(docker ps -a -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/grow)
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/grow:latest
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/grow:latest
             
-            sudo docker run -d --name grow_app --log-driver=syslog -p 80:8080 \
+            sudo docker run -d --name grow-app --log-driver=syslog -p 80:8080 \
               ${{ secrets.DOCKER_USERNAME }}/grow:latest
+            sudo docker network connect redis-network $(docker ps -a -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/grow)

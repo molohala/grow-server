@@ -1,0 +1,44 @@
+package com.molohala.grow.core.like.application.service
+
+import com.molohala.grow.core.like.domain.entity.Like
+import com.molohala.grow.core.like.repository.LikeCachedRepository
+import com.molohala.grow.core.like.repository.LikeJpaRepository
+import com.molohala.grow.core.like.repository.LikeQueryRepository
+import com.molohala.grow.core.member.application.MemberSessionHolder
+import com.molohala.grow.core.member.domain.entity.Member
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+@Transactional(readOnly = true)
+class LikeService(
+    private val likeJpaRepository: LikeJpaRepository,
+    private val likeQueryRepository: LikeQueryRepository,
+    private val likeCachedRepository: LikeCachedRepository,
+    private val memberSessionHolder: MemberSessionHolder,
+) {
+    @Transactional(rollbackFor = [Exception::class])
+    fun patch(communityId: Long) {
+        val member: Member = memberSessionHolder.current()
+        val isExist: Boolean = likeQueryRepository
+            .existsByCommunityIdAndMemberId(communityId, member.id!!)
+        if (isExist) {
+            likeJpaRepository.delete(
+                likeQueryRepository.findByCommunityIdAndMemberId(communityId, member.id)
+            )
+        } else {
+            likeJpaRepository.save(
+                Like(communityId, member.id)
+            )
+        }
+
+        val countToCache = likeQueryRepository.getCntByCommunityId(communityId)
+        likeCachedRepository.cache(communityId, countToCache)
+    }
+
+    fun getCnt(communityId: Long): Long {
+        val count = likeQueryRepository.getCntByCommunityId(communityId)
+        likeCachedRepository.cache(communityId, count)
+        return count
+    }
+}

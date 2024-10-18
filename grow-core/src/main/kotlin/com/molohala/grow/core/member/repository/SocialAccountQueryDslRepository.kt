@@ -1,0 +1,68 @@
+package com.molohala.grow.core.member.repository
+
+import com.molohala.grow.core.member.domain.consts.SocialType
+import com.molohala.grow.core.member.domain.entity.QMember.member
+import com.molohala.grow.core.member.domain.entity.QSocialAccount.socialAccount
+import com.molohala.grow.core.member.domain.entity.SocialAccount
+import com.molohala.grow.core.rank.domain.dto.SocialAccountDTO
+import com.querydsl.core.types.Projections
+import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.stereotype.Repository
+
+@Repository
+class SocialAccountQueryDslRepository(
+    private val queryFactory: JPAQueryFactory
+) : SocialAccountQueryRepository {
+    override fun findSocialAccountByMemberIdAndType(memberId: Long, type: SocialType): SocialAccount? {
+        return queryFactory
+            .select(socialAccountProjection())
+            .from(socialAccount)
+            .where(socialAccount.memberId.eq(memberId).and(socialAccount.socialType.eq(type)))
+            .fetchOne()
+    }
+
+    override fun getSocialAccountsWithMemberInfo(): List<SocialAccountDTO> {
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    SocialAccountDTO::class.java,
+                    socialAccount.memberId,
+                    member.name,
+                    member.email,
+                    socialAccount.socialId,
+                    socialAccount.socialType
+                )
+            )
+            .from(socialAccount)
+            .innerJoin(member)
+            .fetch()
+    }
+
+    override fun getSocialAccountsWithMemberInfo(socialType: SocialType): List<SocialAccountDTO> {
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    SocialAccountDTO::class.java,
+                    socialAccount.memberId,
+                    member.name,
+                    member.email,
+                    socialAccount.socialId,
+                    socialAccount.socialType
+                )
+            )
+            .from(socialAccount)
+            .where(socialAccount.socialType.eq(socialType))
+            .innerJoin(member).on(socialAccount.memberId.eq(member.id))
+            .fetch()
+    }
+
+
+    private fun socialAccountProjection() = Projections.constructor(
+        SocialAccount::class.java,
+        socialAccount.socialId,
+        socialAccount.socialType,
+        socialAccount.memberId,
+        socialAccount.id,
+        socialAccount.createdAt
+    )
+}
